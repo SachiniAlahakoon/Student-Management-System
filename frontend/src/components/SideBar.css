@@ -1,0 +1,86 @@
+.side-bar {
+    height: 100%;
+    width: 250px;
+    background-color: rgb(16, 116, 13);
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+}
+
+.side-bar-items {
+    margin-top: 100px;
+    flex: 1;
+}
+
+.side-bar-items .row {
+    width: 100%;
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+    color: white;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    gap: 10px;
+    padding: 12px 0;
+    font-weight: bold;
+}
+
+.row #icon {
+    flex: 30%;
+    display: grid;
+    place-items: center;
+}
+
+.row #title {
+    flex: 70%;
+    text-align: left;
+}
+
+.side-bar-items #active {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.row:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.logout {
+    margin-top: auto;
+    margin-bottom: 0px;
+    background-color: red;
+}
+
+.logout .logout-item {
+    width: 100%;
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+    color: white;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    gap: 10px;
+    font-weight: bold;
+    padding: 12px 0;
+}
+
+.logout #title {
+    flex: 70%;
+    text-align: left;
+}
+
+.logout #icon {
+    flex: 30%;
+    display: grid;
+    place-items: center;
+}
+
+.logout:hover {
+    background-color: darkred;
+}
