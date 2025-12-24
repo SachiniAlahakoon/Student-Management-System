@@ -1,5 +1,5 @@
 import React from 'react'
-import './SideBar.css'
+import './styles/SideBar.css'
 import { SideBarData } from './SideBarData.jsx'
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useLocation, useNavigate } from 'react-router-dom';

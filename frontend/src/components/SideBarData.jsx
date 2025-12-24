@@ -7,16 +7,16 @@ export const SideBarData = [
     {
         title: "Profile",
         icon: <AccountCircleIcon />,
-        link: "/profile"
+        link: "/student/profile"
     },
     {
         title: "Exam Results",
         icon: <BarChartIcon />,
-        link: "/student-dashboard"
+        link: "/student/exam-results"
     },
     {
         title: "Notices",
         icon: <CampaignIcon />,
-        link: "/notices"
+        link: "/student/notices"
     }
 ]

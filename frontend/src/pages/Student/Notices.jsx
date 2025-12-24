@@ -1,6 +1,6 @@
 import React from "react";
-import "./Notices.css";
-import NotificationCard from "../components/NotificationCard";
+import "./styles/Notices.css";
+import NotificationCard from "../../components/NotificationCard";
 
 function Notices() {
   return (

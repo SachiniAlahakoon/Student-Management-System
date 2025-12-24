@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import "./StudentDashboard.css";
+import "./styles/ExamResults.css";
 
-function StudentDashboard() {
+function ExamResults() {
   const [selectedYear, setSelectedYear] = useState("");
   const [selectedTerm, setSelectedTerm] = useState("");
 
@@ -69,4 +69,4 @@ function StudentDashboard() {
   );
 }
 
-export default StudentDashboard;
+export default ExamResults;

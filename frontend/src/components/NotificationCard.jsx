@@ -1,5 +1,5 @@
 import React from "react";
-import "./NotificationCard.css";
+import "./styles/NotificationCard.css";
 
 function NotificationCard() {
   return (
