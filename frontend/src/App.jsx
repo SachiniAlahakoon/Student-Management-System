@@ -1,5 +1,5 @@
-import ExamResults from "./pages/Student/ExamResults.jsx";
-import Notices from "./pages/Student/Notices.jsx";
+import ExamResults from "./pages/student/ExamResults.jsx";
+import Notices from "./pages/student/Notices.jsx";
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import StudentFrame from "./layouts/StudentFrame.jsx";
