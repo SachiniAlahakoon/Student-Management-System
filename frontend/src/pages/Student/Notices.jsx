@@ -5,9 +5,9 @@ import NotificationCard from "../../components/NotificationCard";
 function Notices() {
   return (
     <div className="contentArea">
-      <div className="heading">
+      <header className="heading">
         <h1>Notices</h1>
-      </div>
+      </header>
       <div>
         <div className="notify-filter">
           <label htmlFor="">All</label>
