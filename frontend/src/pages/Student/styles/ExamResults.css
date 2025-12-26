@@ -1,0 +1,76 @@
+.contentArea {
+  padding: 20px;
+}
+
+.heading {
+  margin-bottom: 20px;
+}
+
+.heading h1 {
+  font-size: 2em;
+  color: #333;
+}
+
+.inputArea {
+  margin-top: 50px;
+}
+
+.input-groups {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.input-group {
+  flex: 1;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.input-group input,
+.input-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.submit-btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #0b8bf5;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.submit-btn:hover {
+  background-color: #096fcd;
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 30px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ddd;
+}
+
+.results-table th,
+.results-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.results-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}

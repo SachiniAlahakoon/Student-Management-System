@@ -1,4 +1,8 @@
 
+
+
+import React from "react";
+
 import "./styles/Bottom.css";
 
 function Bottom() {
@@ -14,4 +18,8 @@ function Bottom() {
   );
 }
 
+<<<<<<< HEAD
 export default Bottom;
+=======
+export default Bottom;
+>>>>>>> 604206b0caad1b492473746849812a0242c12452

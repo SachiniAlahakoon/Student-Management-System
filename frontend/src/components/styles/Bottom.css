@@ -1,0 +1,13 @@
+.bottom-area {
+    position: absolute;
+    bottom: 0;
+    left: 250px;
+    width: calc(100% - 250px);
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 10px 20px;
+    text-align: center;
+    font-size: small;
+    color: #000000a2;
+    border-top: 1px solid #e0e0e0;
+    z-index: 0;
+}

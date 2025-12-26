@@ -1,4 +1,5 @@
 
+import React from 'react'
 import './styles/SideBar.css'
 import { SideBarData } from './SideBarData.jsx'
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -40,3 +41,4 @@ function SideBar() {
 }
 
 export default SideBar;
+export default SideBar

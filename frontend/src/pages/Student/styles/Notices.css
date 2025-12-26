@@ -1,0 +1,43 @@
+.contentArea {
+  padding: 20px;
+}
+
+.heading {
+  margin-bottom: 20px;
+}
+
+.heading h1 {
+  font-size: 2em;
+  color: #333;
+}
+
+.notices-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  padding: 0px 0px 20px 0px;
+  min-height: 100vh;
+}
+
+.notify-filter {
+  display: flex;
+  justify-content: flex-start;
+  margin: 20px 0px 5px 0px;
+  padding: 20px 0px 0px 0px;
+  gap: 10px;
+  font-style: italic;
+}
+
+.notify-filter label {
+  margin-right: 8px;
+  width: fit-content;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.notify-filter label:hover {
+  cursor: pointer;
+  color: green;
+  background-color: rgba(0, 128, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
