@@ -6,6 +6,7 @@ import SplashScreen from "./pages/SplashScreen/SplashScreen";
 import ExamResults from "./pages/ExamResults/ExamResults";
 import Notices from "./pages/Notices/Notices";
 import Profile from "./pages/Profile/Profile";
+import Settings from "./pages/Settings/Settings";
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
           <Route path="exam-results" element={<ExamResults />} />
           <Route path="notices" element={<Notices />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
       </Routes>
     </Router>

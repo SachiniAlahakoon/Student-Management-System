@@ -21,7 +21,9 @@ function TopBar() {
                 </div>
                 <img src={ sortDownLogo } alt="" className="sort-down-icon" />
             </div>
-            <SettingsIcon className="settings-icon" />
+            <Link to="Settings">
+              <SettingsIcon className="settings-icon" />
+            </Link>
         </div>
     </nav>
   )
