@@ -6,6 +6,7 @@ import SplashScreen from "./pages/SplashScreen/SplashScreen";
 import ExamResults from "./pages/ExamResults/ExamResults";
 import Notices from "./pages/Notices/Notices";
 import Profile from "./pages/Profile/Profile";
+import TeProfile from "./pages/TeProfile/TeProfile";
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
           <Route path="exam-results" element={<ExamResults />} />
           <Route path="notices" element={<Notices />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="t-profile" element={<TeProfile />} />
         </Route>
       </Routes>
     </Router>
