@@ -60,6 +60,7 @@ export default function ExamResults() {
 
       <div className="inputArea">
         <div className="input-groups">
+            {/* Year selection */}
           <div className="input-group">
             <label htmlFor="year">Select Year:</label>
             <select
@@ -76,6 +77,7 @@ export default function ExamResults() {
             </select>
           </div>
 
+          {/* Term selection */}
           <div className="input-group">
             <label htmlFor="term">Select Term:</label>
             <select
@@ -94,7 +96,8 @@ export default function ExamResults() {
           </div>
         </div>
       </div>
-
+      
+      {/* Show results */}
       <table className="results-table">
         <thead>
           <tr>
@@ -106,9 +109,10 @@ export default function ExamResults() {
         <tbody>
           {results.length === 0 ? (
             <tr>
-              <td colSpan="3">No results found</td>
+              <td colSpan="3">No results found</td> {/*If db has no data for the given year and term*/}
             </tr>
           ) : (
+            // Populate results from db
             results.map((r, i) => (
               <tr key={i}>
                 <td>{r.subject}</td>
