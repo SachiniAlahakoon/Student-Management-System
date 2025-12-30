@@ -23,6 +23,13 @@ export default function Login() {
       const data = res.data;
 
       localStorage.setItem("token", data.token);
+      localStorage.setItem("role", data.user.role);
+      localStorage.setItem("username", data.user.username);
+
+      // if student
+      if (data.user.reg_no) {
+        localStorage.setItem("reg_no", data.user.reg_no);
+      }
 
       const role = data.user.role;
 
