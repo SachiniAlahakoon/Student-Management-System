@@ -11,6 +11,9 @@ app.get('/', (req, res) => res.send('Student Management Backend running'));
 
 // routes
 const authRoutes = require('./routes/auth.routes');
+const studentRoutes = require("./routes/studentRoutes");
+app.use("/api/students", studentRoutes);
+
 
 app.use('/api/auth', authRoutes);
 

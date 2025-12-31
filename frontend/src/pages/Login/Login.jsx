@@ -23,6 +23,8 @@ export default function Login() {
       const data = res.data;
 
       localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
 
       const role = data.user.role;
 
