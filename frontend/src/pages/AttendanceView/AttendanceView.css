@@ -1,0 +1,12 @@
+.contentArea {
+  padding: 20px;
+}
+
+.heading {
+  margin-bottom: 20px;
+}
+
+.heading h1 {
+  font-size: 2em;
+  color: #333;
+}

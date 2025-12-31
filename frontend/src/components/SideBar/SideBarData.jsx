@@ -15,8 +15,8 @@ export const SideBarData = [
     link: "/dashboard/exam-results",
   },
   {
-    title: "Notices",
+    title: "Attendence",
     icon: <CampaignIcon />,
-    link: "/dashboard/notices",
+    link: "/dashboard/attendance-view",
   },
 ];
