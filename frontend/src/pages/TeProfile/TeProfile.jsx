@@ -17,7 +17,7 @@ function Profile() {
   const [error, setError] = useState("");
 
   // temporary hardcoded teacher id for testing
-  const teacherId = 1;
+  const teacherId = 2;
 
   useEffect(() => {
     fetch(`http://localhost:5000/api/teachers/${teacherId}`)

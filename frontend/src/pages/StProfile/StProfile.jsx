@@ -7,16 +7,17 @@ import SchoolIcon from "@mui/icons-material/School";
 import BloodtypeIcon from "@mui/icons-material/Bloodtype";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import PhoneIcon from "@mui/icons-material/Phone";
-import "./Profile.css";
+import "./StProfile.css";
 
-function Profile() {
+function StProfile() {
   const [student, setStudent] = useState(null);
   const [error, setError] = useState("");
+
   const formatDate = (date) =>
     date ? new Date(date).toISOString().split("T")[0] : "--";
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/students/9863582")
+    fetch("http://localhost:5000/api/students/8569232")
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch");
         return res.json();
@@ -34,6 +35,7 @@ function Profile() {
         <h1>Student Profile</h1>
       </header>
 
+      {/* General Information Card */}
       <section className="info-card">
         <h2 className="section-title">GENERAL INFORMATION</h2>
         <div className="general-content">
@@ -90,6 +92,41 @@ function Profile() {
         </div>
       </section>
 
+      {/* Academic Information Card */}
+      <section className="info-card">
+        <h2 className="section-title">ACADEMIC INFORMATION</h2>
+        <div className="academic-content">
+          <div className="detail-item">
+            <span className="detail-label">
+              <SchoolIcon className="icon" /> CURRENT GRADE
+            </span>
+            <span className="detail-value">{student.current_grade}</span>
+          </div>
+          <div className="detail-item">
+            <span className="detail-label">
+              <SchoolIcon className="icon" /> SECTION
+            </span>
+            <span className="detail-value">{student.section}</span>
+          </div>
+          <div className="detail-item">
+            <span className="detail-label">
+              <SchoolIcon className="icon" /> SUBJECT(S) ENROLLED
+            </span>
+            <div className="subjects-list">
+              {student.subjects && student.subjects.length > 0 ? (
+                student.subjects.map((subj, idx) => (
+                  <span key={idx} className="subject-item">
+                    {subj}
+                  </span>
+                ))
+              ) : (
+                <span>No subjects enrolled</span>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Emergency Information Card */}
       <section className="info-card">
         <h2 className="section-title">EMERGENCY INFORMATION</h2>
@@ -135,4 +172,4 @@ function Profile() {
   );
 }
 
-export default Profile;
+export default StProfile;

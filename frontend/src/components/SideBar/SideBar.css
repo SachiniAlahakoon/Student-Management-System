@@ -10,18 +10,18 @@
     z-index: 5;
     display: flex;
     flex-direction: column;
-}
-
-.side-bar-items {
+  }
+  
+  .side-bar-items {
     margin-top: 100px;
     flex: 1;
     align-items: center;
     display: flex;
     flex-direction: column;
     gap: 15px;
-}
-
-.side-bar-items .row {
+  }
+  
+  .side-bar-items .side-bar-row {
     width: 90%;
     height: 20px;
     display: flex;
@@ -37,29 +37,28 @@
     border-radius: 15px;
     background-color: rgba(0, 128, 0, 0.6);
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-
-}
-
-.row #icon {
+  }
+  
+  .side-bar-row #icon {
     flex: 30%;
     display: grid;
     place-items: center;
-}
-
-.row #title {
+  }
+  
+  .side-bar-row #title {
     flex: 70%;
     text-align: left;
-}
-
-.side-bar-items #active {
+  }
+  
+  .side-bar-items #active {
     background-color: rgba(11, 30, 204, 0.6);
-}
-
-.row:hover {
+  }
+  
+  .side-bar-row:hover {
     background-color: rgba(11, 63, 32, 0.8);
-}
-
-.logout {
+  }
+  
+  .logout {
     margin-top: auto;
     margin-bottom: 10px;
     background-color: rgb(228, 15, 15);
@@ -68,9 +67,9 @@
     width: 90%;
     align-self: center;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-}
-
-.logout .logout-item {
+  }
+  
+  .logout .logout-item {
     height: 25px;
     display: flex;
     flex-direction: row;
@@ -82,19 +81,96 @@
     gap: 10px;
     font-weight: bold;
     padding: 12px 0;
-}
-
-.logout #title {
+  }
+  
+  .logout #title {
     flex: 70%;
     text-align: left;
-}
-
-.logout #icon {
+  }
+  
+  .logout #icon {
     flex: 30%;
     display: grid;
     place-items: center;
-}
-
-.logout:hover {
+  }
+  
+  .logout:hover {
     background-color: darkred;
-}
+  }
+  
+  .user-info-card {
+    width: 90%;
+    height: 8vh;
+    align-self: center;
+    display: flex;
+    flex-direction: column; 
+    justify-content: flex-start;
+    margin-bottom: 15px;
+    overflow: hidden;
+    transition: height 0.5s ease;
+    /* From https://css.glass */
+    background: rgba(255, 255, 255, 0.09);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(6.9px);
+    -webkit-backdrop-filter: blur(6.9px);
+    border: 1px solid rgba(255, 255, 255, 0.48);
+  }
+  
+  .user-info-card .logout {
+    opacity: 0;
+    transform: translateY(15px);
+    pointer-events: none;
+    transition: opacity 0.4s ease, transform 0.5s ease;
+    margin-top: auto;
+  }
+  
+  .user-info-card:hover {
+      height: 20vh;
+  }
+  
+  .user-info-card:hover .logout {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  
+  .user-info-card:hover .user-info {
+    margin-top: 10px;
+  }
+  
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    transition: transform 0.4s ease;
+  }
+  
+  .user-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 10px;
+    line-height: 1;
+  }
+  
+  .user-icon {
+    width: 40px;
+    height: 40px;
+    border: #333 1px solid;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .user-name {
+    font-weight: bold;
+    margin-bottom: 2px;
+  }
+  
+  .user-role {
+    font-size: 0.8em;
+    color: #3a3a3a;
+    margin-top: 0;
+  }
+  

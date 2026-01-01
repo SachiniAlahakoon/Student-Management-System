@@ -1,22 +1,21 @@
-import React from "react";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import CampaignIcon from "@mui/icons-material/Campaign";
 
-export const SideBarData = [
+export const StSideBarData = [
   {
-    title: "Profile",
+    title: "My Profile",
     icon: <AccountCircleIcon />,
-    link: "/dashboard/profile",
+    link: "/dashboard/student/s-profile", // updated path
   },
   {
     title: "Exam Results",
     icon: <BarChartIcon />,
-    link: "/dashboard/exam-results",
+    link: "/dashboard/student/exam-results", // updated path
   },
   {
     title: "Notices",
     icon: <CampaignIcon />,
-    link: "/dashboard/notices",
+    link: "/dashboard/student/notices", // updated path
   },
 ];
