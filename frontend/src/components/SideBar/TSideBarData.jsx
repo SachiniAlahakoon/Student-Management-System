@@ -5,7 +5,7 @@ import GroupsIcon from "@mui/icons-material/Groups"; // missing import fixed
 
 export const TSideBarData = [
   {
-    title: "Profile",
+    title: "My Profile",
     icon: <AccountCircleIcon />,
     link: "/dashboard/teacher/t-profile", // updated path
   },

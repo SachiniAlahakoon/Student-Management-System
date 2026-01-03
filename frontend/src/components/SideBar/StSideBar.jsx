@@ -1,5 +1,5 @@
 import "./SideBar.css";
-import { StSideBarData } from "./StSideBarData.jsx"; // make sure the name matches
+import { StSideBarData } from "./StSideBarData.jsx"; 
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useLocation, useNavigate } from "react-router-dom";
 import userIcon from "../../assets/images/user.png";
@@ -19,7 +19,7 @@ function StSideBar() {
   return (
     <div className="side-bar">
       <div className="side-bar-items">
-        {StSideBarData.map((val, key) => (  // <-- fixed here
+        {StSideBarData.map((val, key) => (  
           <li
             key={key}
             className="side-bar-row"

@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { getStudentByRegistrationNo } = require("../controllers/student.controller");
+const { getStudentById } = require("../controllers/student.controller");
 
-router.get("/:regNo", getStudentByRegistrationNo);
+router.get("/:studentId", getStudentById);
 
 module.exports = router;

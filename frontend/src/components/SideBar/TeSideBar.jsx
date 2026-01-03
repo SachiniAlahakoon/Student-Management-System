@@ -9,7 +9,7 @@ function TeSideBar() {
   const navigate = useNavigate();
 
   // HARDCODED FOR NOW
-  const userName = "S.M. Silva"; // change to your teacher's name if needed
+  const userName = "S.M. Silva"; 
   const userRole = "teacher";
 
   const handleLogout = () => {

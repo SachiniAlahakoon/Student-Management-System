@@ -6,16 +6,16 @@ export const StSideBarData = [
   {
     title: "My Profile",
     icon: <AccountCircleIcon />,
-    link: "/dashboard/student/s-profile", // updated path
+    link: "/dashboard/student/s-profile", 
   },
   {
     title: "Exam Results",
     icon: <BarChartIcon />,
-    link: "/dashboard/student/exam-results", // updated path
+    link: "/dashboard/student/exam-results", 
   },
   {
     title: "Notices",
     icon: <CampaignIcon />,
-    link: "/dashboard/student/notices", // updated path
+    link: "/dashboard/student/notices", 
   },
 ];

@@ -1,77 +1,23 @@
 /* StudentInfo.css */
-.contentArea {
+.contentArea1 {
   padding: 20px;
+  background-color: #f9f9f9;
+  min-height: 100%;
 }
 
-.heading {
+.heading1 {
   margin-bottom: 20px;
 }
 
-.heading h1 {
+.heading1 h1 {
   font-size: 2em;
   color: #333;
+  margin-top: 5px;
 }
 
-.student-info-container {
-  width: calc(100% - 250px); 
-  margin-left: 250px; 
-  margin-top: 11vh; 
-  padding: 40px 60px; 
-  background-color: #fdfdfd;
-  min-height: 89vh;
-  box-sizing: border-box;
-}
-
-/* Header & Search Bar */
-.profile-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 40px;
-}
-
-.main-title {
-  font-size: 28px;
-  color: #333;
-  font-weight: 700;
-  margin: 0; 
-}
-
-.search-box {
-  display: flex;
-  gap: 15px;
-  align-items: center;
-}
-
-.search-input {
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 10px 15px;
-  width: 280px;
-  font-size: 14px;
-  font-style: italic;
-  background-color: #fff;
-}
-
-.search-btn {
-  background-color: #5d87ff;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 30px;
-  font-weight: bold;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.search-btn:hover {
-  background-color: #4973e8;
-}
-
-/* Common Card Styling */
-.info-card {
-  background: #fff;
+/* Card Styling */
+.info-card1 {
+  background: #ffffff;
   border: 1px solid #f0f0f0;
   border-radius: 30px;
   padding: 40px 50px;
@@ -79,7 +25,7 @@
   box-shadow: 0 2px 15px rgba(0, 0, 0, 0.03);
 }
 
-.section-title {
+.section-title1 {
   font-size: 18px;
   color: #444;
   margin-bottom: 35px;
@@ -87,100 +33,106 @@
   text-transform: uppercase;
 }
 
-/* General Info Layout */
-.general-content {
-  display: flex;
-  align-items: center; 
-  gap: 100px;
+.info-card1:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
 }
 
-.avatar-circle {
-  width: 180px;      
-  height: 180px;
+/* General Info Layout */
+.general-content1 {
+  display: flex;
+  align-items: center; 
+  gap: 60px;
+}
+
+.avatar-circle1 {
+  width: 150px;      
+  height: 150px;
   border-radius: 50%;
-  border: 2px solid #f0f0f0; 
+  border: 2px solid #e0e0e0; 
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;         
   background-color: #fff;
-  margin-right: 20px;       
+  margin-right: 20px;  
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.avatar-img {
+.avatar-circle1:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.avatar-img1 {
   width: 100%;
   height: 100%;
-  object-fit: contain;     
-  padding: 10px;           
+  object-fit: cover;     
+  padding: 5px;           
+  border-radius: 50%;
 }
 
 /* Details Alignment */
-.details-list {
+.details-list1 {
   flex: 1;
+  
 }
 
-.detail-item {
+.detail-item1 {
   display: flex;
-  margin-bottom: 18px;
   align-items: center;
+  margin-bottom: 18px;
 }
 
-.detail-label {
+.detail-label1 {
   display: flex;
   align-items: center;
   gap: 12px;
+  width: 280px;
   color: #555;
   font-weight: 600;
   font-size: 15px;
-  width: 280px; 
 }
 
-.icon {
-  font-size: 22px !important;
-  color: #444;
-}
-
-.detail-value {
+.detail-value1 {
   color: #333;
   font-weight: 500;
   font-size: 15px;
+  margin-left: 150px;
+
+}
+
+.icon {
+  font-size: 20px !important;
+  color: #444;
 }
 
 /* Emergency Section */
-.emergency-content {
-  max-width: 80%;
+.emergency-content1 {
+  max-width: 85%;
 }
 
-.contact-section {
+.contact-section1 {
   align-items: flex-start;
-
-  margin-top: 20px;
+  margin-top: 15px;
 }
 
-.contacts-grid {
+.contacts-grid1 {
   flex: 1;
 }
 
-.contact-row {
+.contact-row1 {
   display: flex;
-
-  gap: 50px;
-
-  margin-bottom: 10px;
+  gap: 30px;
+  margin-bottom: 8px;
 }
 
-.contact-phone {
+.contact-phone1 {
   width: 120px;
-
   font-weight: 400;
 }
 
-.contact-name {
+.contact-name1 {
   font-weight: 600;
 }
 
-.contact-name small {
-  color: #777;
-
-  font-weight: 400;
-}

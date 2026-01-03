@@ -48,6 +48,7 @@
   .side-bar-row #title {
     flex: 70%;
     text-align: left;
+    padding-left: 3px;
   }
   
   .side-bar-items #active {

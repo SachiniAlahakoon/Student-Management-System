@@ -13,7 +13,7 @@ const getTeacherById = async (req, res) => {
       `
       SELECT 
         t.t_id, t.id_no, t.name, t.birthday, t.phone,
-        t.email, p.subject_taught, p.class_handle, p.y_experince, p.quilification, p.current_role
+        t.email, p.subject_taught, p.class_handle, p.years_experience, p.qualification, p.current_role
       FROM teacher_p t
       JOIN p_information p ON t.t_id = p.t_id
       WHERE t.t_id = ?
