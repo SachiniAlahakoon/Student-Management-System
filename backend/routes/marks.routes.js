@@ -2,28 +2,16 @@ const express = require("express");
 const router = express.Router();
 const marksController = require("../controllers/marks.controller");
 
-/**
- * GET /api/marks
- * Server-side pagination + filtering
- */
+// GET marks (pagination + filters)
 router.get("/", marksController.getMarks);
 
-/**
- * POST /api/marks/add
- * Bulk insert marks
- */
+// ADD marks (bulk)
 router.post("/add", marksController.addMarks);
 
-/**
- * PUT /api/marks/update
- * Bulk update marks
- */
-router.put("/update", marksController.updateMarks);
+// UPDATE or DELETE a single mark
+router.put("/update-one", marksController.updateSingleMark);
 
-/**
- * DELETE /api/marks/reset
- * Reset marks for a class/subject/term
- */
+// RESET marks (bulk)
 router.delete("/reset", marksController.deleteMarks);
 
 module.exports = router;

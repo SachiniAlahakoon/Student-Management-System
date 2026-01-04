@@ -1,107 +1,178 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import {
-  TextField,
   Box,
-  Button,
+  TextField,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
+  Button,
 } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import SaveIcon from "@mui/icons-material/Save";
 import axios from "axios";
 
-export default function MarksTable({ filters }) {
+export default function MarksTable({ classId, subjectId, term, year }) {
   const [rows, setRows] = useState([]);
-  const [rowCount, setRowCount] = useState(0);
   const [loading, setLoading] = useState(false);
 
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState("");
 
-  const [selectedRowIds, setSelectedRowIds] = useState([]);
+  const [editRowId, setEditRowId] = useState(null);
+  const [editMarks, setEditMarks] = useState("");
+  const [deleteRowId, setDeleteRowId] = useState(null);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
-  const [openDialog, setOpenDialog] = useState(false);
-  const [dialogRows, setDialogRows] = useState([]);
-
-  // Fetch marks
+  // Fetch marks from server
   const fetchMarks = useCallback(async () => {
-    if (!filters?.class_id || !filters?.subject_id || !filters?.term || !filters?.year) return;
+    if (!classId || !subjectId || !term || !year) {
+      setRows([]);
+      return;
+    }
 
     setLoading(true);
     try {
       const res = await axios.get("http://localhost:5000/api/teacher/marks", {
         params: {
+          class_id: classId,
+          subject_id: subjectId,
+          term,
+          year,
           page: page + 1,
           limit: pageSize,
           search,
-          ...filters,
         },
       });
 
-      setRows(res.data.data || []);
-      setRowCount(res.data.total || 0);
+      const data = res.data?.data || [];
+      setRows(
+        data.map((row) => ({
+          ...row,
+          marks: row.marks ?? "",
+          grade: row.grade ?? "N/A",
+        }))
+      );
     } catch (err) {
-      console.error(err);
+      console.error("Fetch marks error:", err);
       setRows([]);
-      setRowCount(0);
     } finally {
       setLoading(false);
     }
-  }, [page, pageSize, filters, search]);
-
-  useEffect(() => {
-    setPage(0);
-    setSelectedRowIds([]);
-  }, [filters, search]);
+  }, [classId, subjectId, term, year, page, pageSize, search]);
 
   useEffect(() => {
     fetchMarks();
   }, [fetchMarks]);
 
-  const columns = [
-    { field: "student_id", headerName: "ID", width: 80 },
-    { field: "reg_no", headerName: "Reg No", width: 120 },
-    { field: "student_name", headerName: "Student Name", flex: 1 },
-    { field: "marks", headerName: "Marks", width: 100 },
-    { field: "grade", headerName: "Grade", width: 100 },
-    { field: "term", headerName: "Term", width: 90 },
-    { field: "year", headerName: "Year", width: 90 },
-  ];
-
-  const handleOpenDialog = () => {
-    const selected = rows.filter((r) => selectedRowIds.includes(r.result_id));
-    setDialogRows(selected);
-    setOpenDialog(true);
+  const handleEditClick = (row) => {
+    setEditRowId(row.result_id);
+    setEditMarks(row.marks ?? "");
   };
 
-  const handleDialogChange = (index, value) => {
-    const updated = [...dialogRows];
-    updated[index].marks = value;
-    setDialogRows(updated);
-  };
-
-  const handleSubmitUpdate = async () => {
-    if (!dialogRows.length) return;
-
+  const handleSaveClick = async (rowId) => {
     try {
-      await axios.put("http://localhost:5000/api/teacher/marks/update", {
-        marks: dialogRows.map((r) => ({
-          result_id: r.result_id,
-          marks: r.marks,
-        })),
+      await axios.put("http://localhost:5000/api/teacher/marks/update-one", {
+        result_id: rowId,
+        marks: editMarks,
       });
-
-      alert("Marks updated successfully");
-      setOpenDialog(false);
-      setSelectedRowIds([]);
-      fetchMarks();
+      setRows((prev) =>
+        prev.map((row) =>
+          row.result_id === rowId ? { ...row, marks: editMarks } : row
+        )
+      );
+      setEditRowId(null);
+      setEditMarks("");
     } catch (err) {
-      console.error(err);
-      alert("Failed to update marks");
+      console.error("Save error:", err);
+      alert("Failed to save mark");
     }
   };
+
+  const handleDeleteClick = (row) => {
+    setDeleteRowId(row.result_id);
+    setOpenDeleteDialog(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      await axios.put("http://localhost:5000/api/teacher/marks/update-one", {
+        result_id: deleteRowId,
+        marks: null,
+      });
+      setRows((prev) =>
+        prev.map((row) =>
+          row.result_id === deleteRowId ? { ...row, marks: "" } : row
+        )
+      );
+      setDeleteRowId(null);
+      setOpenDeleteDialog(false);
+    } catch (err) {
+      console.error("Delete error:", err);
+      alert("Failed to delete mark");
+    }
+  };
+
+  const columns = [
+    { field: "reg_no", headerName: "Reg No", width: 120 },
+    { field: "student_name", headerName: "Student Name", flex: 1 },
+    {
+      field: "marks",
+      headerName: "Marks",
+      width: 120,
+      renderCell: (params) =>
+        editRowId === params.row?.result_id ? (
+          <TextField
+            type="number"
+            size="small"
+            value={editMarks}
+            onChange={(e) => setEditMarks(e.target.value)}
+          />
+        ) : params.row?.marks !== null && params.row?.marks !== "" ? (
+          params.row.marks
+        ) : (
+          "N/A"
+        ),
+    },
+    {
+      field: "grade",
+      headerName: "Grade",
+      width: 100,
+      valueGetter: (params) => params.row?.grade ?? "N/A",
+    },
+    {
+      field: "actions",
+      type: "actions",
+      headerName: "Actions",
+      width: 120,
+      getActions: (params) => [
+        editRowId === params.row?.result_id ? (
+          <GridActionsCellItem
+            key="save"
+            icon={<SaveIcon />}
+            label="Save"
+            onClick={() => handleSaveClick(params.row.result_id)}
+          />
+        ) : (
+          <GridActionsCellItem
+            key="edit"
+            icon={<EditIcon />}
+            label="Edit"
+            onClick={() => handleEditClick(params.row)}
+          />
+        ),
+        <GridActionsCellItem
+          key="delete"
+          icon={<DeleteIcon />}
+          label="Delete"
+          onClick={() => handleDeleteClick(params.row)}
+        />,
+      ],
+    },
+  ];
 
   return (
     <Box sx={{ height: 550, width: "100%" }}>
@@ -113,63 +184,38 @@ export default function MarksTable({ filters }) {
           onChange={(e) => setSearch(e.target.value)}
           fullWidth
         />
-
-        <Button
-          variant="contained"
-          disabled={selectedRowIds.length === 0}
-          onClick={handleOpenDialog}
-        >
-          Update Marks
-        </Button>
       </Box>
 
       <DataGrid
         rows={rows}
         columns={columns}
         getRowId={(row) => row.result_id}
-        checkboxSelection
-        disableRowSelectionOnClick
-
-        pagination
-        paginationMode="server"
-        rowCount={rowCount}
         page={page}
         pageSize={pageSize}
         onPageChange={(newPage) => setPage(newPage)}
-        onPageSizeChange={(newSize) => {
-          setPageSize(newSize);
-          setPage(0);
-        }}
-
+        onPageSizeChange={(newSize) => setPageSize(newSize)}
         loading={loading}
-
-        selectionModel={selectedRowIds}
-        onSelectionModelChange={(selection) => {
-          const ids = selection.selectionModel || [];
-          setSelectedRowIds(ids.map(Number));
-        }}
+        pagination
+        paginationMode="server"
+        rowCount={rows.length} // ensures pagination component receives count
+        autoHeight
+        disableSelectionOnClick
+        experimentalFeatures={{ newEditingApi: true }}
       />
 
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="sm">
-        <DialogTitle>Update Selected Marks</DialogTitle>
+      <Dialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+      >
+        <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
-          {dialogRows.map((row, i) => (
-            <Box key={row.result_id} sx={{ display: "flex", gap: 2, mb: 1 }}>
-              <Box sx={{ width: 200 }}>{row.student_name}</Box>
-              <TextField
-                type="number"
-                size="small"
-                value={row.marks}
-                onChange={(e) => handleDialogChange(i, e.target.value)}
-              />
-            </Box>
-          ))}
+          Are you sure you want to delete this mark?
         </DialogContent>
         <DialogActions>
-          <Button variant="contained" onClick={handleSubmitUpdate}>
-            Submit Update
+          <Button onClick={() => setOpenDeleteDialog(false)}>Cancel</Button>
+          <Button color="error" onClick={confirmDelete}>
+            Delete
           </Button>
-          <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
         </DialogActions>
       </Dialog>
     </Box>
