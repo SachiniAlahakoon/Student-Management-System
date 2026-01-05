@@ -99,13 +99,14 @@
 .academic-content {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 5px;
 }
 
 .subjects-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 5px;
+  margin-left: 140px;
 }
 
 .subject-item {
@@ -120,7 +121,7 @@
 .emergency-content {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 5px;
   max-width: 80%;
 }
 

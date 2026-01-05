@@ -39,4 +39,3 @@ const getTeacherById = async (req, res) => {
 module.exports = { getTeacherById };
 
 //module.exports = { getTeacherProfile };
-

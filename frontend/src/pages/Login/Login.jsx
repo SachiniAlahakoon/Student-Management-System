@@ -95,3 +95,49 @@ export default function Login() {
     </div>
   );
 }
+
+/*import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { API_BASE } from "../../api/config";
+
+export default function Login() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [err, setErr] = useState(null);
+  const navigate = useNavigate();
+
+  const submit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post(`${API_BASE}/api/auth/login`, { username, password });
+      
+      const { userId, role } = res.data;
+
+      // Save user info (No JWT needed for now)
+      localStorage.setItem("userId", userId);
+      localStorage.setItem("role", role);
+
+      // Redirect
+      if (role === "student") {
+        navigate("/dashboard/student/s-profile");
+      } else if (role === "teacher") {
+        navigate("/dashboard/teacher/t-profile");
+      }
+    } catch (error) {
+      setErr("Login failed. Check your credentials.");
+    }
+  };
+
+  return (
+    <div className="login-root">
+      <form onSubmit={submit} className="login-form">
+        <h2>Login</h2>
+        <input type="text" placeholder="Username" onChange={(e)=>setUsername(e.target.value)} required />
+        <input type="password" placeholder="Password" onChange={(e)=>setPassword(e.target.value)} required />
+        {err && <p className="error">{err}</p>}
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  );
+}*/
