@@ -30,9 +30,9 @@ function SideBar() {
         ))}
       </div>
 
-      {/* Bottom actions – SAME STYLE as menu items */}
+
       <div className="side-bar-bottom">
-        <li className="settings" onClick={() => navigate("/settings")}>
+        <li className="settings">
           <div className="settings-item">
             <div id="icon">
               <SettingsIcon />

@@ -31,8 +31,8 @@ export default function MarksTable({ classId, subjectId, term, year }) {
   const [loading, setLoading] = useState(false);
 
   const [editRowId, setEditRowId] = useState(null);
-  const [editMarks, setEditMarks] = useState("");
-  const [editError, setEditError] = useState("");
+  const [editMarks, setEditMarks] = useState(null);
+  const [editError, setEditError] = useState(null);
 
   const [selectionModel, setSelectionModel] = useState([]);
   const [bulkEditMarks, setBulkEditMarks] = useState({});
@@ -40,7 +40,7 @@ export default function MarksTable({ classId, subjectId, term, year }) {
   const [openBulkEditDialog, setOpenBulkEditDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(null);
 
   /* Pagination part */
   const [page, setPage] = useState(0);

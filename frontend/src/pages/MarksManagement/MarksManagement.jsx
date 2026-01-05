@@ -30,7 +30,7 @@ export default function MarksManagement() {
   const [availableYears, setAvailableYears] = useState([]);
   const [loadTable, setLoadTable] = useState(false); // Trigger table load
 
-  /* -------------------- FETCH DATA -------------------- */
+  /* Fetch data */
   useEffect(() => {
     axios
       .get(`http://localhost:5000/api/teacher/classes/${teacherId}`)
