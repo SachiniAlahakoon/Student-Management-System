@@ -1,20 +1,23 @@
 import { Link } from "react-router-dom";
-import './TopBar.css';
-import logo from '../../assets/images/Swarnamali GCK Logo.png';
-import SettingsIcon from '@mui/icons-material/Settings';
+import "./TopBar.css";
+import logo from "../../assets/images/Swarnamali GCK Logo.png";
+import UserInfoCard from "../UserInfoCard/UserInfoCard";
 
 function TopBar() {
   return (
     <nav className="top-bar">
-        <div className="logo-area">
-            <img src={ logo } alt="" className="logo" />
-            <Link to="/student/exam-results" className="title">Swarnamali Girls College</Link>
-        </div>
-        <div className="right-section">
-            <SettingsIcon className="settings-icon" />
-        </div>
+      <div className="logo-area">
+        <img src={logo} alt="" className="logo" />
+        <Link to="/student/exam-results" className="title">
+          Swarnamali Girls College
+        </Link>
+      </div>
+
+      <div className="right-section">
+        <UserInfoCard compact />
+      </div>
     </nav>
-  )
+  );
 }
 
-export default TopBar
+export default TopBar;

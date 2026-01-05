@@ -46,7 +46,7 @@
 }
 
 .side-bar-row #title {
-  flex: 70%;
+  flex: 100%;
   text-align: left;
 }
 
@@ -98,78 +98,77 @@
   background-color: darkred;
 }
 
-.user-info-card {
-  width: 90%;
-  height: 8vh;
-  align-self: center;
-  display: flex;
-  flex-direction: column; 
-  justify-content: flex-start;
-  margin-bottom: 15px;
-  overflow: hidden;
-  transition: height 0.5s ease;
-  /* From https://css.glass */
-  background: rgba(255, 255, 255, 0.09);
-  border-radius: 16px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(6.9px);
-  -webkit-backdrop-filter: blur(6.9px);
-  border: 1px solid rgba(255, 255, 255, 0.48);
-}
-
-.user-info-card .logout {
-  opacity: 0;
-  transform: translateY(15px);
-  pointer-events: none;
-  transition: opacity 0.4s ease, transform 0.5s ease;
-  margin-top: auto;
-}
-
-.user-info-card:hover {
-    height: 20vh;
-}
-
-.user-info-card:hover .logout {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-}
-
-.user-info-card:hover .user-info {
-  margin-top: 10px;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
-  transition: transform 0.4s ease;
-}
-
-.user-details {
+.sidebar-bottom {
+  margin-bottom: 20px;
   display: flex;
   flex-direction: column;
+  gap: 10px;
+  width: 90%;
+  align-self: center;
+}
+
+.logout-item {
+  background-color: rgb(228, 15, 15);
+  border-radius: 15px;
+  padding: 12px 0;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  margin-left: 10px;
-  line-height: 1;
-}
-
-.user-icon {
-  width: 40px;
-  height: 40px;
-  border: #333 1px solid;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.user-name {
+  gap: 10px;
+  color: white;
+  cursor: pointer;
   font-weight: bold;
-  margin-bottom: 2px;
 }
 
-.user-role {
-  font-size: 0.8em;
-  color: #3a3a3a;
-  margin-top: 0;
+.logout-item:hover {
+  background-color: darkred;
+}
+
+.side-bar-bottom {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+
+/*  */
+.settings {
+  margin-top: auto;
+  margin-bottom: 10px;
+  background-color: rgba(0, 128, 0, 0.6);
+  font-weight: bold;
+  border-radius: 15px;
+  width: 90%;
+  align-self: center;
+  color: white;
+}
+
+.settings .settings-item {
+  height: 25px;
+  display: flex;
+  flex-direction: row;
+  margin: 0;
+  color: white;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  gap: 10px;
+  font-weight: bold;
+  padding: 12px 0;
+}
+
+.settings #title {
+  flex: 70%;
+  text-align: left;
+}
+
+.settings #icon {
+  flex: 30%;
+  display: grid;
+  place-items: center;
+}
+
+.settings:hover {
+  background-color: rgba(11, 63, 32, 0.8);
 }

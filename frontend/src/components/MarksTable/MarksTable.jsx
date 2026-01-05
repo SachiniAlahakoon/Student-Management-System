@@ -1,18 +1,29 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import {
-  Box,
   TextField,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Checkbox,
+  Paper,
+  Tooltip,
+  TablePagination,
 } from "@mui/material";
+
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SaveIcon from "@mui/icons-material/Save";
 import CloseIcon from "@mui/icons-material/Close";
+
+import "./MarksTable.css";
 import axios from "axios";
 
 export default function MarksTable({ classId, subjectId, term, year }) {
@@ -21,242 +32,404 @@ export default function MarksTable({ classId, subjectId, term, year }) {
 
   const [editRowId, setEditRowId] = useState(null);
   const [editMarks, setEditMarks] = useState("");
+  const [editError, setEditError] = useState("");
 
-  const [deleteRowId, setDeleteRowId] = useState(null);
+  const [selectionModel, setSelectionModel] = useState([]);
+  const [bulkEditMarks, setBulkEditMarks] = useState({});
+  const [bulkErrors, setBulkErrors] = useState({});
+  const [openBulkEditDialog, setOpenBulkEditDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
-  // Pagination & search
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState("");
 
-  // Normalize server data safely
-  const normalizeRows = (data) =>
-    data.map((row, index) => ({
-      result_id: row.result_id ?? row.student_id ?? index,
+  /* Pagination part */
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  /* Normalize incoming data from API */
+  const normalizeRows = (data = []) =>
+    data.map((row) => ({
+      id: row.result_id ?? row.reg_no,
       student_name: row.student_name ?? "Unknown",
       reg_no: row.reg_no ?? "-",
-      marks: row.marks === null ? null : row.marks,
+      marks: row.marks ?? null,
       grade: row.grade ?? "N/A",
     }));
 
+  /* Fetch Data */
   const fetchData = useCallback(async () => {
     if (!classId || !subjectId || !term || !year) {
       setRows([]);
+      setSelectionModel([]);
       return;
     }
 
     setLoading(true);
     try {
-      const res = await axios.get(
-        "http://localhost:5000/api/teacher/marks",
-        {
-          params: {
-            class_id: classId,
-            subject_id: subjectId,
-            term,
-            year,
-            page: page + 1,
-            limit: pageSize,
-            search,
-          },
-        }
-      );
-
-      const data = res.data?.data || [];
-      setRows(normalizeRows(data));
+      const res = await axios.get("http://localhost:5000/api/teacher/marks", {
+        params: {
+          class_id: classId,
+          subject_id: subjectId,
+          term,
+          year,
+          search,
+        },
+      });
+      setRows(normalizeRows(res.data?.data));
+      setPage(0);
     } catch (err) {
       console.error("Fetch error:", err);
       setRows([]);
     } finally {
       setLoading(false);
     }
-  }, [classId, subjectId, term, year, page, pageSize, search]);
+  }, [classId, subjectId, term, year, search]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
-  // Edit handlers
+  /* Individual Edit */
   const handleEditClick = (row) => {
-    setEditRowId(row.result_id);
+    setEditRowId(row.id);
     setEditMarks(row.marks ?? "");
+    setEditError("");
   };
 
-  const handleSaveClick = async (rowId) => {
+  const handleSaveClick = async (id) => {
+    const val = Number(editMarks);
+    if (isNaN(val) || val < 1 || val > 100) {
+      setEditError("Marks must be between 1-100");
+      return;
+    }
+
     try {
-      await axios.put(
-        "http://localhost:5000/api/teacher/marks/update-one",
-        {
-          result_id: rowId,
-          marks: editMarks,
-        }
-      );
+      await axios.put("http://localhost:5000/api/teacher/marks/update-one", {
+        result_id: id,
+        marks: val,
+      });
 
       setRows((prev) =>
-        prev.map((row) =>
-          row.result_id === rowId
-            ? { ...row, marks: editMarks }
-            : row
-        )
+        prev.map((r) => (r.id === id ? { ...r, marks: val } : r))
       );
 
       setEditRowId(null);
       setEditMarks("");
-    } catch (err) {
-      console.error("Save error:", err);
-      alert("Failed to save mark");
+      setEditError("");
+    } catch {
+      alert("Failed to save");
     }
   };
 
-  const handleCancelEdit = () => {
-    setEditRowId(null);
-    setEditMarks("");
+  /* Bulk Edit */
+  const openBulkEdit = () => {
+    const initialMarks = {};
+    const initialErrors = {};
+    selectionModel.forEach((id) => {
+      const row = rows.find((r) => r.id === id);
+      if (row) {
+        initialMarks[id] = row.marks ?? "";
+        initialErrors[id] = "";
+      }
+    });
+    setBulkEditMarks(initialMarks);
+    setBulkErrors(initialErrors);
+    setOpenBulkEditDialog(true);
   };
 
-  // Delete handlers
-  const handleDeleteClick = (row) => {
-    setDeleteRowId(row.result_id);
-    setOpenDeleteDialog(true);
-  };
+  const saveBulkEdit = async () => {
+    const errors = {};
+    let hasError = false;
 
-  const confirmDelete = async () => {
+    Object.entries(bulkEditMarks).forEach(([id, val]) => {
+      const num = Number(val);
+      if (isNaN(num) || num < 1 || num > 100) {
+        errors[id] = "Marks must be 1-100";
+        hasError = true;
+      }
+    });
+
+    setBulkErrors(errors);
+    if (hasError) return;
+
     try {
-      await axios.put(
-        "http://localhost:5000/api/teacher/marks/update-one",
-        {
-          result_id: deleteRowId,
-          marks: null,
-        }
-      );
-
-      setRows((prev) =>
-        prev.map((row) =>
-          row.result_id === deleteRowId
-            ? { ...row, marks: null }
-            : row
+      await Promise.all(
+        Object.entries(bulkEditMarks).map(([id, marks]) =>
+          axios.put("http://localhost:5000/api/teacher/marks/update-one", {
+            result_id: id,
+            marks: Number(marks),
+          })
         )
       );
 
-      setDeleteRowId(null);
-      setOpenDeleteDialog(false);
-    } catch (err) {
-      console.error("Delete error:", err);
-      alert("Failed to delete mark");
+      setRows((prev) =>
+        prev.map((r) =>
+          r.id in bulkEditMarks
+            ? { ...r, marks: Number(bulkEditMarks[r.id]) }
+            : r
+        )
+      );
+
+      setOpenBulkEditDialog(false);
+      setBulkEditMarks({});
+      setBulkErrors({});
+      setSelectionModel([]);
+    } catch {
+      alert("Bulk update failed");
     }
   };
 
-  const columns = [
-    { field: "reg_no", headerName: "Reg No", width: 120 },
-    { field: "student_name", headerName: "Student Name", flex: 1 },
-    {
-      field: "marks",
-      headerName: "Marks",
-      width: 120,
-      renderCell: (params) =>
-        editRowId === params.row.result_id ? (
-          <TextField
-            type="number"
-            size="small"
-            value={editMarks}
-            onChange={(e) => setEditMarks(e.target.value)}
-          />
-        ) : params.value === null ? (
-          "N/A"
-        ) : (
-          params.value
-        ),
-    },
-    {
-      field: "grade",
-      headerName: "Grade",
-      width: 100,
-      valueGetter: (params) => params.row?.grade ?? "N/A",
-    },
-    {
-      field: "actions",
-      type: "actions",
-      headerName: "Actions",
-      width: 140,
-      getActions: (params) =>
-        editRowId === params.row.result_id
-          ? [
-              <GridActionsCellItem
-                key="save"
-                icon={<SaveIcon />}
-                label="Save"
-                onClick={() =>
-                  handleSaveClick(params.row.result_id)
-                }
-              />,
-              <GridActionsCellItem
-                key="cancel"
-                icon={<CloseIcon />}
-                label="Cancel"
-                onClick={handleCancelEdit}
-              />,
-            ]
-          : [
-              <GridActionsCellItem
-                key="edit"
-                icon={<EditIcon />}
-                label="Edit"
-                onClick={() => handleEditClick(params.row)}
-              />,
-              <GridActionsCellItem
-                key="delete"
-                icon={<DeleteIcon />}
-                label="Delete"
-                onClick={() => handleDeleteClick(params.row)}
-              />,
-            ],
-    },
-  ];
+  /* Bulk Delete */
+  const confirmDelete = async () => {
+    try {
+      await Promise.all(
+        selectionModel.map((id) =>
+          axios.put("http://localhost:5000/api/teacher/marks/update-one", {
+            result_id: id,
+            marks: null,
+          })
+        )
+      );
+      setRows((prev) =>
+        prev.map((r) =>
+          selectionModel.includes(r.id) ? { ...r, marks: null } : r
+        )
+      );
+      setSelectionModel([]);
+      setOpenDeleteDialog(false);
+    } catch {
+      alert("Delete failed");
+    }
+  };
+
+  /* Pagination Slicer */
+  const paginatedRows = rows.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
 
   return (
-    <Box sx={{ height: 550, width: "100%" }}>
+    <div className="marks-table-container">
+      {/* Search */}
       <TextField
         label="Search by Name or Reg No"
         size="small"
+        fullWidth
+        className="search-field"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        fullWidth
-        sx={{ mb: 1 }}
       />
 
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        getRowId={(row) => row.result_id}
+      {/* Bulk edit and delete */}
+      <div className="bulk-actions">
+        <Button onClick={openBulkEdit} disabled={selectionModel.length === 0}>
+          Bulk Edit
+        </Button>
+        <Button
+          color="error"
+          onClick={() => setOpenDeleteDialog(true)}
+          disabled={selectionModel.length === 0}
+        >
+          Bulk Delete
+        </Button>
+      </div>
+
+      {/* Table */}
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell padding="checkbox">
+                <Checkbox
+                  checked={
+                    rows.length > 0 && selectionModel.length === rows.length
+                  }
+                  indeterminate={
+                    selectionModel.length > 0 &&
+                    selectionModel.length < rows.length
+                  }
+                  onChange={(e) =>
+                    setSelectionModel(
+                      e.target.checked ? rows.map((r) => r.id) : []
+                    )
+                  }
+                />
+              </TableCell>
+              <TableCell className="col-reg">Reg No</TableCell>
+              <TableCell className="col-name">Name</TableCell>
+              <TableCell className="col-marks">Marks</TableCell>
+              <TableCell className="col-grade">Grade</TableCell>
+              <TableCell className="col-actions">Actions</TableCell>
+            </TableRow>
+          </TableHead>
+
+          <TableBody>
+            {paginatedRows.map((row) => {
+              const isSelected = selectionModel.includes(row.id);
+              const isEditing = editRowId === row.id;
+
+              return (
+                <TableRow key={row.id} selected={isSelected}>
+                  <TableCell padding="checkbox">
+                    <Checkbox
+                      checked={isSelected}
+                      onChange={(e) =>
+                        setSelectionModel((prev) =>
+                          e.target.checked
+                            ? [...prev, row.id]
+                            : prev.filter((id) => id !== row.id)
+                        )
+                      }
+                    />
+                  </TableCell>
+
+                  <TableCell>{row.reg_no}</TableCell>
+                  <TableCell>{row.student_name}</TableCell>
+
+                  <TableCell>
+                    {isEditing ? (
+                      <div>
+                        <TextField
+                          type="number"
+                          size="small"
+                          inputProps={{ min: 1, max: 100 }}
+                          value={editMarks}
+                          onChange={(e) => setEditMarks(e.target.value)}
+                          error={!!editError}
+                        />
+                        {editError && <p className="error-text">{editError}</p>}
+                      </div>
+                    ) : (
+                      row.marks ?? "N/A"
+                    )}
+                  </TableCell>
+
+                  <TableCell>{row.grade}</TableCell>
+
+                  <TableCell>
+                    {isEditing ? (
+                      <>
+                        <Tooltip title="Save">
+                          <Button
+                            size="small"
+                            sx={{ color: "primary.main" }}
+                            onClick={() => handleSaveClick(row.id)}
+                          >
+                            <SaveIcon />
+                          </Button>
+                        </Tooltip>
+
+                        <Tooltip title="Cancel">
+                          <Button
+                            size="small"
+                            sx={{ color: "primary.main" }}
+                            onClick={() => {
+                              setEditRowId(null);
+                              setEditMarks("");
+                              setEditError("");
+                            }}
+                          >
+                            <CloseIcon />
+                          </Button>
+                        </Tooltip>
+                      </>
+                    ) : (
+                      <>
+                        <Tooltip title="Edit">
+                          <Button
+                            size="small"
+                            sx={{ color: "primary.main" }}
+                            onClick={() => handleEditClick(row)}
+                          >
+                            <EditIcon />
+                          </Button>
+                        </Tooltip>
+
+                        <Tooltip title="Delete">
+                          <Button
+                            size="small"
+                            color="error"
+                            onClick={() => {
+                              setSelectionModel([row.id]);
+                              setOpenDeleteDialog(true);
+                            }}
+                          >
+                            <DeleteIcon />
+                          </Button>
+                        </Tooltip>
+                      </>
+                    )}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      {/* Pagination */}
+      <TablePagination
+        component="div"
+        count={rows.length}
         page={page}
-        pageSize={pageSize}
-        onPageChange={(newPage) => setPage(newPage)}
-        onPageSizeChange={(newSize) => setPageSize(newSize)}
-        loading={loading}
-        pagination
-        paginationMode="server"
-        rowCount={rows.length}
-        autoHeight
-        disableSelectionOnClick
+        onPageChange={(e, newPage) => setPage(newPage)}
+        rowsPerPage={rowsPerPage}
+        onRowsPerPageChange={(e) => {
+          setRowsPerPage(parseInt(e.target.value, 10));
+          setPage(0);
+        }}
+        rowsPerPageOptions={[5, 10, 25, 50]}
       />
 
-      <Dialog
-        open={openDeleteDialog}
-        onClose={() => setOpenDeleteDialog(false)}
-      >
+      {/* Delete Dialog */}
+      <Dialog open={openDeleteDialog}>
         <DialogTitle>Confirm Delete</DialogTitle>
-        <DialogContent>
-          Are you sure you want to delete this mark?
-        </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)}>
-            Cancel
-          </Button>
+          <Button onClick={() => setOpenDeleteDialog(false)}>Cancel</Button>
           <Button color="error" onClick={confirmDelete}>
             Delete
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+
+      {/* Bulk Edit Dialog */}
+      <Dialog open={openBulkEditDialog} fullWidth maxWidth="md">
+        <DialogTitle>Bulk Update Marks</DialogTitle>
+        <DialogContent>
+          {selectionModel.map((id) => {
+            const row = rows.find((r) => r.id === id);
+            if (!row) return null;
+
+            return (
+              <div key={id} className="bulk-edit-row">
+                <div className="bulk-edit-name">{row.student_name}</div>
+                <div>
+                  <TextField
+                    type="number"
+                    size="small"
+                    inputProps={{ min: 1, max: 100 }}
+                    value={bulkEditMarks[id] ?? ""}
+                    onChange={(e) =>
+                      setBulkEditMarks((prev) => ({
+                        ...prev,
+                        [id]: e.target.value,
+                      }))
+                    }
+                    error={!!bulkErrors[id]}
+                  />
+                  {bulkErrors[id] && (
+                    <p className="error-text">{bulkErrors[id]}</p>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenBulkEditDialog(false)}>Cancel</Button>
+          <Button onClick={saveBulkEdit}>Save</Button>
+        </DialogActions>
+      </Dialog>
+    </div>
   );
 }

@@ -1,8 +1,6 @@
 const pool = require("../config/db");
 
-/**
- * GET /api/teacher/marks
- */
+/*GET /api/teacher/marks */
 exports.getMarks = async (req, res) => {
   let {
     class_id,
@@ -77,9 +75,7 @@ exports.getMarks = async (req, res) => {
   }
 };
 
-/**
- * POST /api/teacher/marks/add
- */
+/* POST /api/teacher/marks/add */
 exports.addMarks = async (req, res) => {
   const { class_id, subject_id, year, term, marks } = req.body;
 
@@ -112,10 +108,8 @@ exports.addMarks = async (req, res) => {
   }
 };
 
-/**
- * PUT /api/teacher/marks/update-one
- * Used for BOTH edit and delete
- */
+/* PUT /api/teacher/marks/update-one
+ * Used for BOTH edit and delete */
 exports.updateSingleMark = async (req, res) => {
   const { result_id, marks } = req.body;
 
@@ -141,9 +135,7 @@ exports.updateSingleMark = async (req, res) => {
   }
 };
 
-/**
- * DELETE /api/teacher/marks/reset
- */
+/* DELETE /api/teacher/marks/reset */
 exports.deleteMarks = async (req, res) => {
   const { class_id, subject_id, term, year } = req.body;
 
