@@ -5,7 +5,7 @@ import userIcon from '../../assets/images/user.png';
 import sortDownLogo from '../../assets/images/sort-down.png';
 import SettingsIcon from '@mui/icons-material/Settings';
 
-function TopBar() {
+function TopBar({darkMode}) {
   return (
     <nav className="top-bar">
         <div className="logo-area">
