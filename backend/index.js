@@ -13,9 +13,11 @@ app.get('/', (req, res) => res.send('Student Management Backend running'));
 const authRoutes = require('./routes/auth.routes');
 const studentRoutes = require('./routes/student.routes');
 const teacherRoutes = require("./routes/teacher.routes");
+const profileRoutes = require('./routes/profile.routes');
 app.use('/api/auth', authRoutes);
 app.use('/api/students', studentRoutes);
 app.use("/api/teachers", teacherRoutes);
+app.use('/api/profile', profileRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server listening on ${PORT}`));

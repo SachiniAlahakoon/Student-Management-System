@@ -1,41 +1,73 @@
 const pool = require("../config/db");
 
-const getTeacherById = async (req, res) => {
-  const { tId } = req.params; // match frontend / route param
+// Fetch teacher profile based on JWT user id
+const getTeacherProfile = async (req, res) => {
+  try {
+    const userId = req.user.id; // from authenticate middleware
 
-//  const getTeacherProfile = async (req, res) => {
-//  if (req.user.role !== "teacher") {
-//    return res.status(403).json({ message: "Not a teacher" });
-//  }
+    const [rows] = await pool.query(
+      `SELECT
+         t.teacher_id,
+         t.id_no,
+         t.teacher_name,
+         t.birthday,
+         t.phone,
+         t.email,
+         p.years_experience,
+         p.qualification,
+         p.current_role,
+         p.bio
+       FROM teachers t
+       LEFT JOIN p_information p
+         ON t.teacher_id = p.teacher_id
+       WHERE t.user_id = ?`,
+      [userId]
+    );
+
+    if (!rows.length) {
+      return res.status(404).json({ message: "Teacher profile not found" });
+    }
+
+    res.json(rows[0]);
+  } catch (error) {
+    console.error("Error fetching teacher profile:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Optional: Admin fetch teacher by ID
+const getTeacherById = async (req, res) => {
+  const { teacherId } = req.params;
 
   try {
     const [rows] = await pool.query(
-      `
-      SELECT 
-        t.t_id, t.id_no, t.name, t.birthday, t.phone,
-        t.email, p.subject_taught, p.class_handle, p.years_experience, p.qualification, p.current_role
-      FROM teacher_p t
-      JOIN p_information p ON t.t_id = p.t_id
-      WHERE t.t_id = ?
-      `,
-      [tId]
-
-      //  [req.user.userId]
+      `SELECT
+         t.teacher_id,
+         t.id_no,
+         t.teacher_name,
+         t.birthday,
+         t.phone,
+         t.email,
+         p.years_experience,
+         p.qualification,
+         p.current_role,
+         p.bio
+       FROM teachers t
+       LEFT JOIN p_information p
+         ON t.teacher_id = p.teacher_id
+       WHERE t.teacher_id = ?`,
+      [teacherId]
     );
 
     if (!rows.length) {
       return res.status(404).json({ message: "Teacher not found" });
     }
 
-    const teacher = rows[0];
-    res.json(teacher);
-
+    res.json(rows[0]);
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching teacher by ID:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
 
-module.exports = { getTeacherById };
-
-//module.exports = { getTeacherProfile };
+module.exports = { getTeacherProfile, getTeacherById };

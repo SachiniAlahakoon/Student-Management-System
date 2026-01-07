@@ -13,10 +13,10 @@ export const StSideBarData = [
     icon: <BarChartIcon />,
     link: "/dashboard/student/exam-results", 
   },
-  {
+  /*{
     title: "Notices",
     icon: <CampaignIcon />,
     link: "/dashboard/student/notices", 
-  },
+  },*/
 ];
 

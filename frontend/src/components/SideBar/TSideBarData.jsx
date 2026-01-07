@@ -19,9 +19,9 @@ export const TSideBarData = [
     icon: <BarChartIcon />,
     link: "/dashboard/teacher/marks-manage", // updated path
   },
-  {
+ /* {
     title: "Notices",
     icon: <CampaignIcon />,
     link: "/dashboard/teacher/notices", // updated path
-  },
+  },*/
 ];

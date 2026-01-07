@@ -5,8 +5,8 @@ import axios from "axios";
 import "./Login.css";
 
 export default function Login() {
-  const [username, setUsername] = useState(null);
-  const [password, setPassword] = useState(null);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [err, setErr] = useState(null);
   const navigate = useNavigate();
 
@@ -20,28 +20,24 @@ export default function Login() {
         password,
       });
 
-      const data = res.data;
+      const { token, user } = res.data;
 
-      localStorage.setItem("token", data.token);
+      // Save JWT + user info
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
 
-      const role = data.user.role;
-
-      if (role === "admin") {
+      // Redirect based on role
+      if (user.role === "admin") {
         navigate("/dashboard/admin");
-      } else if (role === "student") {
-        navigate("/dashboard/student");
-      } else if (role === "teacher") {
-        navigate("/dashboard/teacher");
+      } else if (user.role === "student") {
+        navigate("/dashboard/student/s-profile");
+      } else if (user.role === "teacher") {
+        navigate("/dashboard/teacher/t-profile");
       } else {
         setErr("Unknown user role");
       }
     } catch (error) {
-      // Axios error handling
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
+      if (error.response && error.response.data && error.response.data.message) {
         setErr(error.response.data.message);
       } else {
         setErr("Login failed");
@@ -96,6 +92,7 @@ export default function Login() {
   );
 }
 
+
 /*import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -109,23 +106,37 @@ export default function Login() {
 
   const submit = async (e) => {
     e.preventDefault();
+    setErr(null);
+
     try {
-      const res = await axios.post(`${API_BASE}/api/auth/login`, { username, password });
-      
-      const { userId, role } = res.data;
+      const res = await axios.post(`${API_BASE}/api/auth/login`, {
+        username,
+        password,
+      });
 
-      // Save user info (No JWT needed for now)
-      localStorage.setItem("userId", userId);
-      localStorage.setItem("role", role);
+      const { token, user } = res.data;
 
-      // Redirect
-      if (role === "student") {
+      // Save JWT + user info
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      // Redirect based on role
+      if (user.role === "student") {
         navigate("/dashboard/student/s-profile");
-      } else if (role === "teacher") {
+      } else if (user.role === "teacher") {
         navigate("/dashboard/teacher/t-profile");
+      } else if (user.role === "admin") {
+        navigate("/dashboard/admin");
+      } else {
+        setErr("Unknown user role");
       }
+
     } catch (error) {
-      setErr("Login failed. Check your credentials.");
+      if (error.response && error.response.data && error.response.data.message) {
+        setErr(error.response.data.message);
+      } else {
+        setErr("Login failed. Check your credentials.");
+      }
     }
   };
 
@@ -133,8 +144,18 @@ export default function Login() {
     <div className="login-root">
       <form onSubmit={submit} className="login-form">
         <h2>Login</h2>
-        <input type="text" placeholder="Username" onChange={(e)=>setUsername(e.target.value)} required />
-        <input type="password" placeholder="Password" onChange={(e)=>setPassword(e.target.value)} required />
+        <input
+          type="text"
+          placeholder="Username or Email"
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
         {err && <p className="error">{err}</p>}
         <button type="submit">Login</button>
       </form>

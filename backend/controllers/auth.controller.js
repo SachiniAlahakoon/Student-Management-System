@@ -11,7 +11,12 @@ const login = async (req, res) => {
 
   try {
     const [rows] = await pool.query(
-      "SELECT * FROM users WHERE username = ? OR email = ? LIMIT 1",
+      `SELECT u.*, s.reg_no, t.id_no
+       FROM users u
+       LEFT JOIN students s ON s.user_id = u.user_id
+       LEFT JOIN teachers t ON t.user_id = u.user_id
+       WHERE u.username = ? OR u.email = ?
+       LIMIT 1;`,
       [username, username]
     );
 
@@ -21,28 +26,40 @@ const login = async (req, res) => {
 
     const user = rows[0];
 
-    // const isValid = await bcrypt.compare(password, user.password_hash);
-    const isValid = password === user.password_hash; // For simplicity, direct comparison
+    // Password check (simplified)
+    const isValid = password === user.password_hash; // or use bcrypt.compare in production
     if (!isValid) {
       return res.status(401).json({ message: "Invalid username or password" });
     }
 
-    const token = jwt.sign(
-      { id: user.id, username: user.username, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "8h" }
-    );
+    // Build JWT payload
+    const payload = {
+      id: user.user_id,
+      username: user.username,
+      role: user.role,
+    };
+
+    if (user.role === "student") {
+      payload.reg_no = user.reg_no;
+    }
+
+    if (user.role === "teacher") {
+      payload.id_no = user.id_no;
+    }
+
+    if (user.role === "admin") {
+      // Add admin-specific info if needed
+    }
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "8h" });
 
     res.json({
       token,
-      user: {
-        id: user.id,
-        username: user.username,
-        role: user.role,
-      },
+      user: payload, // send same info to frontend
     });
+
   } catch (err) {
-    console.error(err);
+    console.error("LOGIN ERROR", err);
     res.status(500).json({ message: "Server error" });
   }
 };
