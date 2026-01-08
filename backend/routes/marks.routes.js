@@ -14,4 +14,6 @@ router.put("/update-one", marksController.updateSingleMark);
 // RESET marks (bulk)
 router.delete("/reset", marksController.deleteMarks);
 
+router.get("/all-for-report", marksController.getAllMarksForReport);
+
 module.exports = router;

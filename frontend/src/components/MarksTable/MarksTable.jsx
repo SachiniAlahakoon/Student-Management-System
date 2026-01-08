@@ -25,14 +25,16 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import "./MarksTable.css";
 import axios from "axios";
+import { API_BASE } from "../../api/config";
+import SubjectReportDialog from "../SubjectReportDialog/SubjectReportDialog";
 
 export default function MarksTable({ classId, subjectId, term, year }) {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const [editRowId, setEditRowId] = useState(null);
-  const [editMarks, setEditMarks] = useState(null);
-  const [editError, setEditError] = useState(null);
+  const [editMarks, setEditMarks] = useState("");
+  const [editError, setEditError] = useState("");
 
   const [selectionModel, setSelectionModel] = useState([]);
   const [bulkEditMarks, setBulkEditMarks] = useState({});
@@ -40,11 +42,15 @@ export default function MarksTable({ classId, subjectId, term, year }) {
   const [openBulkEditDialog, setOpenBulkEditDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
-  const [search, setSearch] = useState(null);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportData, setReportData] = useState(null);
+
+  const [search, setSearch] = useState("");
 
   /* Pagination part */
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [totalRows, setTotalRows] = useState(0);
 
   /* Normalize incoming data from API */
   const normalizeRows = (data = []) =>
@@ -53,7 +59,6 @@ export default function MarksTable({ classId, subjectId, term, year }) {
       student_name: row.student_name ?? "Unknown",
       reg_no: row.reg_no ?? "-",
       marks: row.marks ?? null,
-      grade: row.grade ?? "N/A",
     }));
 
   /* Fetch Data */
@@ -66,28 +71,40 @@ export default function MarksTable({ classId, subjectId, term, year }) {
 
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:5000/api/teacher/marks", {
+      const res = await axios.get(`${API_BASE}/api/teacher/marks`, {
         params: {
           class_id: classId,
           subject_id: subjectId,
           term,
           year,
           search,
+          page: page + 1,
+          limit: rowsPerPage,
         },
       });
       setRows(normalizeRows(res.data?.data));
-      setPage(0);
+      setTotalRows(res.data?.total);
     } catch (err) {
       console.error("Fetch error:", err);
       setRows([]);
     } finally {
       setLoading(false);
     }
-  }, [classId, subjectId, term, year, search]);
+  }, [classId, subjectId, term, year, search, page, rowsPerPage]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  const calculateGrade = (marks) => {
+    if (marks === null || marks === undefined) return "N/A";
+
+    if (marks >= 75) return "A";
+    if (marks >= 65) return "B";
+    if (marks >= 55) return "C";
+    if (marks >= 35) return "S";
+    return "F";
+  };
 
   /* Individual Edit */
   const handleEditClick = (row) => {
@@ -98,13 +115,13 @@ export default function MarksTable({ classId, subjectId, term, year }) {
 
   const handleSaveClick = async (id) => {
     const val = Number(editMarks);
-    if (isNaN(val) || val < 1 || val > 100) {
-      setEditError("Marks must be between 1-100");
+    if (isNaN(val) || val < 0 || val > 100) {
+      setEditError("Marks must be between 0-100");
       return;
     }
 
     try {
-      await axios.put("http://localhost:5000/api/teacher/marks/update-one", {
+      await axios.put(`${API_BASE}/api/teacher/marks/update-one`, {
         result_id: id,
         marks: val,
       });
@@ -155,7 +172,7 @@ export default function MarksTable({ classId, subjectId, term, year }) {
     try {
       await Promise.all(
         Object.entries(bulkEditMarks).map(([id, marks]) =>
-          axios.put("http://localhost:5000/api/teacher/marks/update-one", {
+          axios.put(`${API_BASE}/api/teacher/marks/update-one`, {
             result_id: id,
             marks: Number(marks),
           })
@@ -184,7 +201,7 @@ export default function MarksTable({ classId, subjectId, term, year }) {
     try {
       await Promise.all(
         selectionModel.map((id) =>
-          axios.put("http://localhost:5000/api/teacher/marks/update-one", {
+          axios.put(`${API_BASE}/api/teacher/marks/update-one`, {
             result_id: id,
             marks: null,
           })
@@ -202,11 +219,19 @@ export default function MarksTable({ classId, subjectId, term, year }) {
     }
   };
 
-  /* Pagination Slicer */
-  const paginatedRows = rows.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
-  );
+  const handleOpenReport = async () => {
+    const res = await axios.get(`${API_BASE}/api/reports/subject-summary`, {
+      params: {
+        class_id: classId,
+        subject_id: subjectId,
+        year,
+        term,
+      },
+    });
+
+    setReportData(res.data);
+    setReportOpen(true);
+  };
 
   return (
     <div className="marks-table-container">
@@ -232,6 +257,7 @@ export default function MarksTable({ classId, subjectId, term, year }) {
         >
           Bulk Delete
         </Button>
+        <Button onClick={handleOpenReport}>Export Report</Button>
       </div>
 
       {/* Table */}
@@ -264,7 +290,7 @@ export default function MarksTable({ classId, subjectId, term, year }) {
           </TableHead>
 
           <TableBody>
-            {paginatedRows.map((row) => {
+            {rows.map((row) => {
               const isSelected = selectionModel.includes(row.id);
               const isEditing = editRowId === row.id;
 
@@ -292,8 +318,8 @@ export default function MarksTable({ classId, subjectId, term, year }) {
                         <TextField
                           type="number"
                           size="small"
-                          inputProps={{ min: 1, max: 100 }}
-                          value={editMarks}
+                          inputProps={{ min: 0, max: 100 }}
+                          value={editMarks ?? ""}
                           onChange={(e) => setEditMarks(e.target.value)}
                           error={!!editError}
                         />
@@ -304,7 +330,7 @@ export default function MarksTable({ classId, subjectId, term, year }) {
                     )}
                   </TableCell>
 
-                  <TableCell>{row.grade}</TableCell>
+                  <TableCell>{calculateGrade(row.marks)}</TableCell>
 
                   <TableCell>
                     {isEditing ? (
@@ -370,7 +396,7 @@ export default function MarksTable({ classId, subjectId, term, year }) {
       {/* Pagination */}
       <TablePagination
         component="div"
-        count={rows.length}
+        count={totalRows}
         page={page}
         onPageChange={(e, newPage) => setPage(newPage)}
         rowsPerPage={rowsPerPage}
@@ -407,7 +433,7 @@ export default function MarksTable({ classId, subjectId, term, year }) {
                   <TextField
                     type="number"
                     size="small"
-                    inputProps={{ min: 1, max: 100 }}
+                    inputProps={{ min: 0, max: 100 }}
                     value={bulkEditMarks[id] ?? ""}
                     onChange={(e) =>
                       setBulkEditMarks((prev) => ({
@@ -430,6 +456,12 @@ export default function MarksTable({ classId, subjectId, term, year }) {
           <Button onClick={saveBulkEdit}>Save</Button>
         </DialogActions>
       </Dialog>
+
+      <SubjectReportDialog
+        open={reportOpen}
+        onClose={() => setReportOpen(false)}
+        reportData={reportData}
+      />
     </div>
   );
 }

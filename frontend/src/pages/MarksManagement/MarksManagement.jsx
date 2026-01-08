@@ -146,7 +146,7 @@ export default function MarksManagement() {
           disabled={!isActionEnabled}
           onClick={handleViewReport}
         >
-          View Report
+          View Marksheet
         </Button>
       </Box>
 

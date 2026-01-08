@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
+const { route } = require("./reports.routes");
 
 // Get classes for a teacher
 router.get("/classes/:teacherId", async (req, res) => {
