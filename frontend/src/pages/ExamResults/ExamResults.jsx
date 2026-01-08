@@ -3,10 +3,8 @@ import axios from "axios";
 import {
   Box,
   Button,
-  FormControl,
-  InputLabel,
-  MenuItem,
   Select,
+  MenuItem,
   Table,
   TableBody,
   TableCell,
@@ -14,10 +12,11 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Pagination,
+  InputLabel,
+  FormControl,
 } from "@mui/material";
-import {API_BASE} from "../../config";
-
+import { API_BASE } from "../../config";
+import "./ExamResults.css";
 
 export default function ExamResults() {
   const reg_no = 12345; // TEMP
@@ -28,9 +27,6 @@ export default function ExamResults() {
 
   const [year, setYear] = useState("");
   const [term, setTerm] = useState("");
-
-  const [page, setPage] = useState(1);
-  const rowsPerPage = 5;
 
   const [loaded, setLoaded] = useState(false);
 
@@ -56,124 +52,92 @@ export default function ExamResults() {
       return;
     }
 
-    const res = await axios.get(
-      `${API_BASE}/api/students/exam-results`,
-      {
-        params: { reg_no, year, term },
-      }
-    );
+    const res = await axios.get(`${API_BASE}/api/students/exam-results`, {
+      params: { reg_no, year, term },
+    });
 
     setResults(res.data || []);
-    setPage(1);
     setLoaded(true);
   };
 
-  /* Pagination part */
-  const paginatedResults = results.slice(
-    (page - 1) * rowsPerPage,
-    page * rowsPerPage
-  );
-
-  /* User Interface */
   return (
-    <div className="contentArea">
+    <div className="marks-table-container">
       <header className="heading">
         <h1>Exam Results</h1>
       </header>
 
-      <Box p={3}>
-
-        {/* Filter area */}
-        <Box display="flex" gap={2} mb={3}>
-          <FormControl fullWidth>
-            <InputLabel>Year</InputLabel>
-            <Select
-              sx={{ height: 40, maxWidth: 500 }}
-              value={year}
-              label="Year"
-              onOpen={loadYears}
-              onChange={(e) => {
-                setYear(e.target.value);
-                setTerm("");
-                loadTerms(e.target.value);
-              }}
-            >
-              {years.map((y) => (
-                <MenuItem key={y} value={y}>
-                  {y}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <FormControl fullWidth disabled={!year}>
-            <InputLabel>Term</InputLabel>
-            <Select
-              sx={{ height: 40, maxWidth: 500 }}
-              value={term}
-              label="Term"
-              onChange={(e) => setTerm(e.target.value)}
-            >
-              {terms.map((t) => (
-                <MenuItem key={t} value={t}>
-                  {t}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <Button
-            variant="contained"
-            sx={{ height: 40, width: 400 }}
-            color="primary"
-            onClick={loadResults}
+      {/* Filter area */}
+      <Box className="bulk-actions">
+        <FormControl size="small" sx={{ minWidth: 300 }}>
+          <InputLabel>Year</InputLabel>
+          <Select
+            value={year}
+            label="Year"
+            onOpen={loadYears}
+            onChange={(e) => {
+              setYear(e.target.value);
+              setTerm("");
+              loadTerms(e.target.value);
+            }}
           >
-            Load Results
-          </Button>
-        </Box>
+            {years.map((y) => (
+              <MenuItem key={y} value={y}>
+                {y}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
 
-        {/* Table */}
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Subject</TableCell>
-                <TableCell>Marks</TableCell>
-                <TableCell>Grade</TableCell>
-              </TableRow>
-            </TableHead>
+        <FormControl size="small" sx={{ minWidth: 300 }}disabled={!year}>
+          <InputLabel>Term</InputLabel>
+          <Select
+            value={term}
+            label="Term"
+            onChange={(e) => setTerm(e.target.value)}
+          >
+            {terms.map((t) => (
+              <MenuItem key={t} value={t}>
+                {t}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
 
-            <TableBody>
-              {loaded && paginatedResults.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={3} align="center">
-                    No results found
-                  </TableCell>
-                </TableRow>
-              )}
-
-              {paginatedResults.map((r, i) => (
-                <TableRow key={i}>
-                  <TableCell>{r.subject}</TableCell>
-                  <TableCell>{r.marks}</TableCell>
-                  <TableCell>{r.grade}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-
-        {/* Pagination */}
-        {results.length > rowsPerPage && (
-          <Box mt={2} display="flex" justifyContent="center">
-            <Pagination
-              count={Math.ceil(results.length / rowsPerPage)}
-              page={page}
-              onChange={(e, value) => setPage(value)}
-            />
-          </Box>
-        )}
+        <Button onClick={loadResults} variant="contained">
+          Load Results
+        </Button>
       </Box>
+
+      {/* Table */}
+      <TableContainer component={Paper}>
+        <Table className="results-table">
+          <TableHead>
+            <TableRow>
+              <TableCell className="col-name">Subject</TableCell>
+              <TableCell className="col-marks">Marks</TableCell>
+              <TableCell className="col-grade">Grade</TableCell>
+            </TableRow>
+          </TableHead>
+
+          <TableBody className="table-body">
+            {results.length === 0 && (
+              <TableRow style={{ height: 150 }}>
+                <TableCell colSpan={3} align="center">
+                  No results found
+                </TableCell>
+              </TableRow>
+            )}
+
+            {results.map((r, i) => (
+              <TableRow key={i}>
+                <TableCell>{r.subject}</TableCell>
+                <TableCell>{r.marks}</TableCell>
+                <TableCell>{r.grade}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   );
 }
