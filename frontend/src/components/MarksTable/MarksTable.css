@@ -13,6 +13,14 @@
   gap: 8px;
 }
 
+.table-heading {
+  background-color: #f4f4f4;
+}
+
+.table-heading th {
+  font-weight: bold;
+}
+
 .table-container {
   max-height: 500px;
 }

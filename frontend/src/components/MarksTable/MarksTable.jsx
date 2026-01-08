@@ -263,7 +263,7 @@ export default function MarksTable({ classId, subjectId, term, year }) {
       {/* Table */}
       <TableContainer component={Paper}>
         <Table>
-          <TableHead>
+          <TableHead className="table-heading">
             <TableRow>
               <TableCell padding="checkbox">
                 <Checkbox
