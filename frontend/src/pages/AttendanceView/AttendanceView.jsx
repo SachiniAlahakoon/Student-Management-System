@@ -18,6 +18,7 @@ import {
   Chip,
 } from "@mui/material";
 import { API_BASE } from "../../config";
+import EmptyStateCard from "../../components/EmptyStateCard/EmptyStateCard";
 import "./AttendanceView.css";
 
 export default function AttendanceView() {
@@ -45,7 +46,6 @@ export default function AttendanceView() {
     { value: "11", label: "November" },
     { value: "12", label: "December" },
   ];
-
 
   useEffect(() => {
     if (!selectedYear || !selectedMonth) return;
@@ -166,6 +166,7 @@ export default function AttendanceView() {
               setSelectedYear("");
               setSelectedMonth("");
               setSelectedWeek("");
+              setLoaded(false);
             }}
           >
             <MenuItem value="week">Week</MenuItem>
@@ -238,40 +239,38 @@ export default function AttendanceView() {
         </Button>
       </Box>
 
-      {/* Table */}
-      <TableContainer component={Paper}>
-        <Table className="results-table">
-          <TableHead>
-            <TableRow>
-              <TableCell className="col-name">Date</TableCell>
-              <TableCell className="col-marks">Status</TableCell>
-            </TableRow>
-          </TableHead>
+      {!loaded ? (
+        <EmptyStateCard message="Select view type and filters to load attendance records" />
+      ) : attendance.length === 0 ? (
+        <EmptyStateCard message="No attendance records found for the selected period" />
+      ) : (
 
-          <TableBody className="table-body">
-            {(attendance.length === 0 || !loaded) && (
-              <TableRow style={{ height: 150 }}>
-                <TableCell colSpan={2} align="center">
-                  No records
-                </TableCell>
+        <TableContainer component={Paper}>
+          <Table className="results-table">
+            <TableHead>
+              <TableRow>
+                <TableCell className="col-name">Date</TableCell>
+                <TableCell className="col-marks">Status</TableCell>
               </TableRow>
-            )}
+            </TableHead>
 
-            {attendance.map((a, i) => (
-              <TableRow key={i}>
-                <TableCell>{dayjs(a.date).format("YYYY-MM-DD")}</TableCell>
-                <TableCell>
-                  <Chip
-                    label={a.status}
-                    color={a.status === "Present" ? "success" : "error"}
-                    size="small"
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            <TableBody className="table-body">
+              {attendance.map((a, i) => (
+                <TableRow key={i}>
+                  <TableCell>{dayjs(a.date).format("YYYY-MM-DD")}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={a.status}
+                      color={a.status === "Present" ? "success" : "error"}
+                      size="small"
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
     </div>
   );
 }

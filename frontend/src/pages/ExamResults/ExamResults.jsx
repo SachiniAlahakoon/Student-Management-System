@@ -16,6 +16,7 @@ import {
   FormControl,
 } from "@mui/material";
 import { API_BASE } from "../../config";
+import EmptyStateCard from "../../components/EmptyStateCard/EmptyStateCard";
 import "./ExamResults.css";
 
 export default function ExamResults() {
@@ -30,7 +31,6 @@ export default function ExamResults() {
 
   const [loaded, setLoaded] = useState(false);
 
-  /* Load list data */
   const loadYears = async () => {
     const res = await axios.get(
       `${API_BASE}/api/students/years?reg_no=${reg_no}`
@@ -45,10 +45,8 @@ export default function ExamResults() {
     setTerms(res.data || []);
   };
 
-  /* Load result */
   const loadResults = async () => {
     if (!year || !term) {
-      alert("Please select year and term");
       return;
     }
 
@@ -66,7 +64,6 @@ export default function ExamResults() {
         <h1>Exam Results</h1>
       </header>
 
-      {/* Filter area */}
       <Box className="bulk-actions">
         <FormControl size="small" sx={{ minWidth: 300 }}>
           <InputLabel>Year</InputLabel>
@@ -88,7 +85,7 @@ export default function ExamResults() {
           </Select>
         </FormControl>
 
-        <FormControl size="small" sx={{ minWidth: 300 }}disabled={!year}>
+        <FormControl size="small" sx={{ minWidth: 300 }} disabled={!year}>
           <InputLabel>Term</InputLabel>
           <Select
             value={term}
@@ -108,36 +105,32 @@ export default function ExamResults() {
         </Button>
       </Box>
 
-      {/* Table */}
-      <TableContainer component={Paper}>
-        <Table className="results-table">
-          <TableHead>
-            <TableRow>
-              <TableCell className="col-name">Subject</TableCell>
-              <TableCell className="col-marks">Marks</TableCell>
-              <TableCell className="col-grade">Grade</TableCell>
-            </TableRow>
-          </TableHead>
-
-          <TableBody className="table-body">
-            {results.length === 0 && (
-              <TableRow style={{ height: 150 }}>
-                <TableCell colSpan={3} align="center">
-                  No results found
-                </TableCell>
+      {!loaded ? (
+        <EmptyStateCard message="Select year and term to view exam results" />
+      ) :  (
+ 
+        <TableContainer component={Paper}>
+          <Table className="results-table">
+            <TableHead>
+              <TableRow>
+                <TableCell className="col-name">Subject</TableCell>
+                <TableCell className="col-marks">Marks</TableCell>
+                <TableCell className="col-grade">Grade</TableCell>
               </TableRow>
-            )}
+            </TableHead>
 
-            {results.map((r, i) => (
-              <TableRow key={i}>
-                <TableCell>{r.subject}</TableCell>
-                <TableCell>{r.marks}</TableCell>
-                <TableCell>{r.grade}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            <TableBody className="table-body">
+              {results.map((r, i) => (
+                <TableRow key={i}>
+                  <TableCell>{r.subject}</TableCell>
+                  <TableCell>{r.marks}</TableCell>
+                  <TableCell>{r.grade}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
     </div>
   );
 }
