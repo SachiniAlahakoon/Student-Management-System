@@ -2,6 +2,8 @@ import React, { useEffect, useReducer, useState } from "react";
 import axios from "axios";
 import { Box, Button, MenuItem, TextField } from "@mui/material";
 import MarksTable from "../../components/MarksTable/MarksTable";
+import EmptyStateCard from "../../components/EmptyStateCard/EmptyStateCard";
+import { API_BASE } from "../../api/config";
 
 const teacherId = 1; // TEMP
 
@@ -33,7 +35,7 @@ export default function MarksManagement() {
   /* Fetch data */
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/api/teacher/classes/${teacherId}`)
+      .get(`${API_BASE}/api/teacher/classes/${teacherId}`)
       .then((res) => setClasses(res.data))
       .catch(console.error);
   }, []);
@@ -42,7 +44,7 @@ export default function MarksManagement() {
     if (!form.classId) return;
     axios
       .get(
-        `http://localhost:5000/api/teacher/subjects/${teacherId}/${form.classId}`
+        `${API_BASE}/api/teacher/subjects/${teacherId}/${form.classId}`
       )
       .then((res) => setSubjects(res.data))
       .catch(console.error);
@@ -50,7 +52,7 @@ export default function MarksManagement() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/reports/years")
+      .get(`${API_BASE}/api/reports/years`)
       .then((res) => setAvailableYears(res.data))
       .catch(console.error);
   }, []);
@@ -66,11 +68,10 @@ export default function MarksManagement() {
   return (
     <div className="contentArea">
       <header className="heading">
-        <h1>Exam Results</h1>
+        <h1>Marks Management</h1>
       </header>
 
       <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", mb: 2 }}>
-        {/* Class select */}
         <TextField
           sx={{ width: 200 }}
           select
@@ -87,7 +88,6 @@ export default function MarksManagement() {
           ))}
         </TextField>
 
-        {/* Subject select */}
         <TextField
           sx={{ width: 200 }}
           select
@@ -105,7 +105,6 @@ export default function MarksManagement() {
           ))}
         </TextField>
 
-        {/* Term select */}
         <TextField
           sx={{ width: 200 }}
           select
@@ -121,7 +120,6 @@ export default function MarksManagement() {
           <MenuItem value="3rd">3rd</MenuItem>
         </TextField>
 
-        {/* Year select */}
         <TextField
           sx={{ width: 200 }}
           select
@@ -139,7 +137,6 @@ export default function MarksManagement() {
           ))}
         </TextField>
 
-        {/* View Report Button */}
         <Button
           variant="contained"
           color="primary"
@@ -150,8 +147,13 @@ export default function MarksManagement() {
         </Button>
       </Box>
 
-      {/* Marks Table */}
-      {loadTable && (
+      {/* Show EmptyStateCard when no selections made, MarksTable otherwise */}
+      {!loadTable ? (
+        <EmptyStateCard
+          message="Select Class, Subject, Term, and Year to view marks"
+          height={300}
+        />
+      ) : (
         <MarksTable
           classId={form.classId}
           subjectId={form.subjectId}

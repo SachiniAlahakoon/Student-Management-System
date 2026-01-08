@@ -1,10 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import {
   TextField,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Button,
   Table,
   TableBody,
@@ -27,8 +23,11 @@ import "./MarksTable.css";
 import axios from "axios";
 import { API_BASE } from "../../api/config";
 import SubjectReportDialog from "../SubjectReportDialog/SubjectReportDialog";
+import EmptyStateCard from "../EmptyStateCard/EmptyStateCard";
+import DeleteDialog from "../DeleteDialog/DeleteDialog";
+import BulkEditDialog from "../BulkEditDialog/BulkEditDialog";
 
-export default function MarksTable({ classId, subjectId, term, year }) {
+function MarksTable({ classId, subjectId, term, year }) {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -47,12 +46,10 @@ export default function MarksTable({ classId, subjectId, term, year }) {
 
   const [search, setSearch] = useState("");
 
-  /* Pagination part */
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [totalRows, setTotalRows] = useState(0);
 
-  /* Normalize incoming data from API */
   const normalizeRows = (data = []) =>
     data.map((row) => ({
       id: row.result_id ?? row.reg_no,
@@ -61,7 +58,6 @@ export default function MarksTable({ classId, subjectId, term, year }) {
       marks: row.marks ?? null,
     }));
 
-  /* Fetch Data */
   const fetchData = useCallback(async () => {
     if (!classId || !subjectId || !term || !year) {
       setRows([]);
@@ -106,7 +102,6 @@ export default function MarksTable({ classId, subjectId, term, year }) {
     return "F";
   };
 
-  /* Individual Edit */
   const handleEditClick = (row) => {
     setEditRowId(row.id);
     setEditMarks(row.marks ?? "");
@@ -138,7 +133,6 @@ export default function MarksTable({ classId, subjectId, term, year }) {
     }
   };
 
-  /* Bulk Edit */
   const openBulkEdit = () => {
     const initialMarks = {};
     const initialErrors = {};
@@ -233,9 +227,39 @@ export default function MarksTable({ classId, subjectId, term, year }) {
     setReportOpen(true);
   };
 
+  if (rows.length === 0 && !loading) {
+    return (
+      <div className="marks-table-container">
+        <TextField
+          label="Search by Name or Reg No"
+          size="small"
+          fullWidth
+          className="search-field"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+
+        <div className="bulk-actions">
+          <Button onClick={openBulkEdit} disabled={selectionModel.length === 0}>
+            Bulk Edit
+          </Button>
+          <Button
+            color="error"
+            onClick={() => setOpenDeleteDialog(true)}
+            disabled={selectionModel.length === 0}
+          >
+            Bulk Delete
+          </Button>
+          <Button onClick={handleOpenReport}>Export Report</Button>
+        </div>
+
+        <EmptyStateCard message="No student records found for this selection" />
+      </div>
+    );
+  }
+
   return (
     <div className="marks-table-container">
-      {/* Search */}
       <TextField
         label="Search by Name or Reg No"
         size="small"
@@ -245,7 +269,6 @@ export default function MarksTable({ classId, subjectId, term, year }) {
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      {/* Bulk edit and delete */}
       <div className="bulk-actions">
         <Button onClick={openBulkEdit} disabled={selectionModel.length === 0}>
           Bulk Edit
@@ -260,7 +283,6 @@ export default function MarksTable({ classId, subjectId, term, year }) {
         <Button onClick={handleOpenReport}>Export Report</Button>
       </div>
 
-      {/* Table */}
       <TableContainer component={Paper}>
         <Table>
           <TableHead className="table-heading">
@@ -393,7 +415,6 @@ export default function MarksTable({ classId, subjectId, term, year }) {
         </Table>
       </TableContainer>
 
-      {/* Pagination */}
       <TablePagination
         component="div"
         count={totalRows}
@@ -407,55 +428,22 @@ export default function MarksTable({ classId, subjectId, term, year }) {
         rowsPerPageOptions={[5, 10, 25, 50]}
       />
 
-      {/* Delete Dialog */}
-      <Dialog open={openDeleteDialog}>
-        <DialogTitle>Confirm Delete</DialogTitle>
-        <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)}>Cancel</Button>
-          <Button color="error" onClick={confirmDelete}>
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <DeleteDialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+        onConfirm={confirmDelete}
+      />
 
-      {/* Bulk Edit Dialog */}
-      <Dialog open={openBulkEditDialog} fullWidth maxWidth="md">
-        <DialogTitle>Bulk Update Marks</DialogTitle>
-        <DialogContent>
-          {selectionModel.map((id) => {
-            const row = rows.find((r) => r.id === id);
-            if (!row) return null;
-
-            return (
-              <div key={id} className="bulk-edit-row">
-                <div className="bulk-edit-name">{row.student_name}</div>
-                <div>
-                  <TextField
-                    type="number"
-                    size="small"
-                    inputProps={{ min: 0, max: 100 }}
-                    value={bulkEditMarks[id] ?? ""}
-                    onChange={(e) =>
-                      setBulkEditMarks((prev) => ({
-                        ...prev,
-                        [id]: e.target.value,
-                      }))
-                    }
-                    error={!!bulkErrors[id]}
-                  />
-                  {bulkErrors[id] && (
-                    <p className="error-text">{bulkErrors[id]}</p>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenBulkEditDialog(false)}>Cancel</Button>
-          <Button onClick={saveBulkEdit}>Save</Button>
-        </DialogActions>
-      </Dialog>
+      <BulkEditDialog
+        open={openBulkEditDialog}
+        onClose={() => setOpenBulkEditDialog(false)}
+        onSave={saveBulkEdit}
+        selectionModel={selectionModel}
+        rows={rows}
+        bulkEditMarks={bulkEditMarks}
+        bulkErrors={bulkErrors}
+        setBulkEditMarks={setBulkEditMarks}
+      />
 
       <SubjectReportDialog
         open={reportOpen}
@@ -465,3 +453,5 @@ export default function MarksTable({ classId, subjectId, term, year }) {
     </div>
   );
 }
+
+export default MarksTable;
