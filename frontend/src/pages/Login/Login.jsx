@@ -23,6 +23,8 @@ export default function Login() {
       const data = res.data;
 
       localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
 
       const role = data.user.role;
 
@@ -53,7 +55,7 @@ export default function Login() {
     <div className="login-root">
       <div className="left-pane">
         <img
-          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6RebpMnWu7Hi2RSCr8JCtpj0HvcT3Lxb4FQ&s"
+          src="/logo.png"
           alt="school"
           className="left-image"
         />
@@ -80,7 +82,7 @@ export default function Login() {
             required
           />
 
-          <div className="row">
+          <div className="abc">
             <a className="forgot" href="/forgot">
               Forgot Password?
             </a>
