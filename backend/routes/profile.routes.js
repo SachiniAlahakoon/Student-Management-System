@@ -16,6 +16,7 @@ router.get("/me", authenticate, (req, res) => {
     if (role === "teacher") {
       return getTeacherProfile(req, res);
     }
+    
     if (role === "admin") {
       return res
         .status(400)

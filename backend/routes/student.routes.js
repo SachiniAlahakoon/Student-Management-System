@@ -7,3 +7,4 @@ const authorizeRole = require("../middleware/role.middleware");
 router.get("/:studentId", authenticate, authorizeRole("admin"), getStudentById);
 
 module.exports = router;
+

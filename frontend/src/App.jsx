@@ -28,6 +28,11 @@ export default function App() {
           <Route path="marks-manage" element={<div>Marks Page</div>} />
           <Route path="notices" element={<Notices />} />
         </Route>
+
+        {/* Admin dashboard*/}
+        <Route path="/dashboard/admin" element={<Dashboard />}>
+          
+        </Route>
       </Routes>
     </Router>
   );

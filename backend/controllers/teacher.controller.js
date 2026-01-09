@@ -18,7 +18,7 @@ const getTeacherProfile = async (req, res) => {
          p.current_role,
          p.bio
        FROM teachers t
-       LEFT JOIN p_information p
+       LEFT JOIN pro_information p
          ON t.teacher_id = p.teacher_id
        WHERE t.user_id = ?`,
       [userId]
@@ -53,7 +53,7 @@ const getTeacherById = async (req, res) => {
          p.current_role,
          p.bio
        FROM teachers t
-       LEFT JOIN p_information p
+       LEFT JOIN pro_information p
          ON t.teacher_id = p.teacher_id
        WHERE t.teacher_id = ?`,
       [teacherId]
