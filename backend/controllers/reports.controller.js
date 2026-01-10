@@ -26,45 +26,41 @@ exports.getSubjectReport = async (req, res) => {
       SELECT
         s.student_id,
         s.reg_no,
-        s.student_name,
+        CONCAT(s.student_firstname, ' ', s.student_lastname) AS student_name,
         er.marks,
         er.grade,
         sub.subject_name,
-        c.class_name,
-        t.teacher_name
+        c.class_name
       FROM students s
-      JOIN exam_results er ON er.student_id = s.student_id
-      JOIN subjects sub ON sub.subject_id = er.subject_id
-      JOIN classes c ON c.class_id = er.class_id
-      JOIN teachers t ON t.teacher_id = c.teacher_id
-      WHERE er.class_id = ?
+      LEFT JOIN exam_results er ON er.student_id = s.student_id
         AND er.subject_id = ?
         AND er.term = ?
         AND er.year = ?
-      ORDER BY COALESCE(er.marks, 'zz') DESC
+      LEFT JOIN subjects sub ON sub.subject_id = er.subject_id
+      LEFT JOIN classes c ON c.class_id = er.class_id
+      WHERE s.class_id = ?
+      ORDER BY COALESCE(er.marks, 0) DESC, s.student_firstname, s.student_lastname
       `,
-      [class_id, subject_id, term, year]
+      [subject_id, term, year, class_id]
     );
 
     if (rows.length === 0) {
       return res.json({
         meta: {},
         stats: {},
-        grades: {},
+        gradeDistribution: [],
         students: [],
       });
     }
 
     const meta = {
-      subject: rows[0].subject_name,
-      class: rows[0].class_name,
-      teacher: rows[0].teacher_name,
+      subject: rows[0].subject_name || "N/A",
+      class: rows[0].class_name || "N/A",
       year,
       term,
     };
 
     const totalStudents = rows.length;
-
     const attended = rows.filter((r) => r.marks !== null);
     const absent = totalStudents - attended.length;
 
@@ -90,23 +86,15 @@ exports.getSubjectReport = async (req, res) => {
       average,
     };
 
-    const grades = {};
-
-    rows.forEach((r) => {
-      if (r.grade) {
-        grades[r.grade] = (grades[r.grade] || 0) + 1;
-      }
-    });
-
     const attendedSorted = attended.sort((a, b) => b.marks - a.marks);
 
     let rank = 1;
     let lastMarks = null;
     let skip = 0;
 
-    attendedSorted.forEach((student, index) => {
+    attendedSorted.forEach((student) => {
       if (student.marks === lastMarks) {
-        student.rank = rank; // tie, same rank
+        student.rank = rank;
         skip++;
       } else {
         rank = rank + skip;
@@ -116,7 +104,6 @@ exports.getSubjectReport = async (req, res) => {
       lastMarks = student.marks;
     });
 
-    // Merge ranks back into full students list, preserving absentees
     const students = rows.map((r) => {
       const attendedStudent = attendedSorted.find(
         (s) => s.student_id === r.student_id
@@ -131,7 +118,6 @@ exports.getSubjectReport = async (req, res) => {
     });
 
     const gradeMap = {};
-
     students.forEach((s) => {
       const label = s.grade ?? "N/A";
       gradeMap[label] = (gradeMap[label] || 0) + 1;
@@ -155,4 +141,3 @@ exports.getSubjectReport = async (req, res) => {
     res.status(500).json({ error: "Failed to generate subject report" });
   }
 };
-

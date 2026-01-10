@@ -1,6 +1,5 @@
 const pool = require("../config/db");
 
-/*GET /api/teacher/marks */
 exports.getMarks = async (req, res) => {
   let {
     class_id,
@@ -30,7 +29,7 @@ exports.getMarks = async (req, res) => {
          AND er.subject_id = ?
          AND er.term = ?
          AND er.year = ?
-         AND (s.student_name LIKE ? OR s.reg_no LIKE ?)`,
+         AND (CONCAT(s.student_firstname, ' ', s.student_lastname) LIKE ? OR s.reg_no LIKE ?)`,
       [class_id, subject_id, term, year, searchQuery, searchQuery]
     );
 
@@ -41,7 +40,7 @@ exports.getMarks = async (req, res) => {
       `SELECT
          er.result_id,
          s.student_id,
-         s.student_name,
+         CONCAT(s.student_firstname, ' ', s.student_lastname) AS student_name,
          s.reg_no,
          er.marks,
          er.grade,
@@ -53,8 +52,8 @@ exports.getMarks = async (req, res) => {
          AND er.subject_id = ?
          AND er.term = ?
          AND er.year = ?
-         AND (s.student_name LIKE ? OR s.reg_no LIKE ?)
-       ORDER BY s.student_name
+         AND (CONCAT(s.student_firstname, ' ', s.student_lastname) LIKE ? OR s.reg_no LIKE ?)
+       ORDER BY s.student_firstname, s.student_lastname
        LIMIT ? OFFSET ?`,
       [
         class_id,
@@ -75,7 +74,6 @@ exports.getMarks = async (req, res) => {
   }
 };
 
-/* POST /api/teacher/marks/add */
 exports.addMarks = async (req, res) => {
   const { class_id, subject_id, year, term, marks } = req.body;
 
@@ -108,8 +106,6 @@ exports.addMarks = async (req, res) => {
   }
 };
 
-/* PUT /api/teacher/marks/update-one
- * Used for BOTH edit and delete */
 exports.updateSingleMark = async (req, res) => {
   const { result_id, marks } = req.body;
 
@@ -135,7 +131,6 @@ exports.updateSingleMark = async (req, res) => {
   }
 };
 
-/* DELETE /api/teacher/marks/reset */
 exports.deleteMarks = async (req, res) => {
   const { class_id, subject_id, term, year } = req.body;
 
@@ -172,17 +167,18 @@ exports.getAllMarksForReport = async (req, res) => {
     const [rows] = await pool.query(
       `SELECT 
          s.student_id,
-         s.student_name,
+         CONCAT(s.student_firstname, ' ', s.student_lastname) AS student_name,
          COALESCE(er.marks, 'Not Entered') AS marks,
          COALESCE(er.grade, '-') AS grade
-       FROM exam_results er
-       JOIN students s ON er.student_id = s.student_id
-       WHERE er.class_id = ?
+       FROM students s
+       LEFT JOIN exam_results er ON er.student_id = s.student_id
+         AND er.class_id = ?
          AND er.subject_id = ?
          AND er.term = ?
          AND er.year = ?
-       ORDER BY s.student_name`,
-      [class_id, subject_id, term, year]
+       WHERE s.class_id = ?
+       ORDER BY s.student_firstname, s.student_lastname`,
+      [class_id, subject_id, term, year, class_id]
     );
 
     res.json(rows);

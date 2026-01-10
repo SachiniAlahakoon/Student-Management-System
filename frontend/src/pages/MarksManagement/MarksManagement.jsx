@@ -30,9 +30,9 @@ export default function MarksManagement() {
   const [classes, setClasses] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [availableYears, setAvailableYears] = useState([]);
-  const [loadTable, setLoadTable] = useState(false); // Trigger table load
+  const [loadTable, setLoadTable] = useState(false); 
 
-  /* Fetch data */
+ 
   useEffect(() => {
     axios
       .get(`${API_BASE}/api/teacher/classes/${teacherId}`)
@@ -147,7 +147,6 @@ export default function MarksManagement() {
         </Button>
       </Box>
 
-      {/* Show EmptyStateCard when no selections made, MarksTable otherwise */}
       {!loadTable ? (
         <EmptyStateCard
           message="Select Class, Subject, Term, and Year to view marks"

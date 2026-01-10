@@ -250,7 +250,7 @@ function MarksTable({ classId, subjectId, term, year }) {
           >
             Bulk Delete
           </Button>
-          <Button onClick={handleOpenReport}>Export Report</Button>
+          <Button onClick={handleOpenReport}>Create Report</Button>
         </div>
 
         <EmptyStateCard message="No student records found for this selection" />
@@ -280,7 +280,7 @@ function MarksTable({ classId, subjectId, term, year }) {
         >
           Bulk Delete
         </Button>
-        <Button onClick={handleOpenReport}>Export Report</Button>
+        <Button onClick={handleOpenReport}>CREATE Report</Button>
       </div>
 
       <TableContainer component={Paper}>
