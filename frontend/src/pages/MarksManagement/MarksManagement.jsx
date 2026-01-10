@@ -52,7 +52,7 @@ export default function MarksManagement() {
 
   useEffect(() => {
     axios
-      .get(`${API_BASE}/api/reports/years`)
+      .get(`${API_BASE}/api/teacher/reports/years`)
       .then((res) => setAvailableYears(res.data))
       .catch(console.error);
   }, []);

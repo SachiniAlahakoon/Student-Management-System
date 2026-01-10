@@ -19,6 +19,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import SaveIcon from "@mui/icons-material/Save";
 import CloseIcon from "@mui/icons-material/Close";
 
+import { toast } from "react-toastify";
+
 import "./MarksTable.css";
 import axios from "axios";
 import { API_BASE } from "../../api/config";
@@ -128,8 +130,11 @@ function MarksTable({ classId, subjectId, term, year }) {
       setEditRowId(null);
       setEditMarks("");
       setEditError("");
+
+      toast.success("Marks updated successfully");
+
     } catch {
-      alert("Failed to save");
+      toast.error("Failed to save");
     }
   };
 
@@ -154,8 +159,8 @@ function MarksTable({ classId, subjectId, term, year }) {
 
     Object.entries(bulkEditMarks).forEach(([id, val]) => {
       const num = Number(val);
-      if (isNaN(num) || num < 1 || num > 100) {
-        errors[id] = "Marks must be 1-100";
+      if (isNaN(num) || num < 0 || num > 100) {
+        errors[id] = "Marks must be 0-100";
         hasError = true;
       }
     });
@@ -185,12 +190,14 @@ function MarksTable({ classId, subjectId, term, year }) {
       setBulkEditMarks({});
       setBulkErrors({});
       setSelectionModel([]);
+
+      toast.success("Marks updated successfully");
+
     } catch {
-      alert("Bulk update failed");
+      toast.error("Bulk update failed");
     }
   };
 
-  /* Bulk Delete */
   const confirmDelete = async () => {
     try {
       await Promise.all(
@@ -208,13 +215,16 @@ function MarksTable({ classId, subjectId, term, year }) {
       );
       setSelectionModel([]);
       setOpenDeleteDialog(false);
+
+      toast.success("Marks Deleted successfully");
+
     } catch {
-      alert("Delete failed");
+      toast.error("Delete failed");
     }
   };
 
   const handleOpenReport = async () => {
-    const res = await axios.get(`${API_BASE}/api/reports/subject-summary`, {
+    const res = await axios.get(`${API_BASE}/api/teacher/reports/subject-summary`, {
       params: {
         class_id: classId,
         subject_id: subjectId,

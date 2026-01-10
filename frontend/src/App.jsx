@@ -1,6 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Login from "./pages/Login/Login";
 
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+import Login from "./pages/Login/Login";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import SplashScreen from "./pages/SplashScreen/SplashScreen";
 import ExamResults from "./pages/ExamResults/ExamResults";
@@ -19,6 +22,14 @@ export default function App() {
           <Route path="marks-management" element={<MarksManagement />} />
         </Route>
       </Routes>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+      />
     </Router>
   );
 }
