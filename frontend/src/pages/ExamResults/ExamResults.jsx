@@ -31,6 +31,8 @@ export default function ExamResults() {
 
   const [loaded, setLoaded] = useState(false);
 
+  const isLoadDisabled = !year || !term;
+
   const loadYears = async () => {
     const res = await axios.get(
       `${API_BASE}/api/students/years?reg_no=${reg_no}`
@@ -74,6 +76,8 @@ export default function ExamResults() {
             onChange={(e) => {
               setYear(e.target.value);
               setTerm("");
+              setResults([]);
+              setLoaded(false);
               loadTerms(e.target.value);
             }}
           >
@@ -90,7 +94,11 @@ export default function ExamResults() {
           <Select
             value={term}
             label="Term"
-            onChange={(e) => setTerm(e.target.value)}
+            onChange={(e) => {
+              setTerm(e.target.value);
+              setResults([]);
+              setLoaded(false);
+            }}
           >
             {terms.map((t) => (
               <MenuItem key={t} value={t}>
@@ -100,15 +108,18 @@ export default function ExamResults() {
           </Select>
         </FormControl>
 
-        <Button onClick={loadResults} variant="contained">
+        <Button
+          onClick={loadResults}
+          variant="contained"
+          disabled={isLoadDisabled}
+        >
           Load Results
         </Button>
       </Box>
 
       {!loaded ? (
         <EmptyStateCard message="Select year and term to view exam results" />
-      ) :  (
- 
+      ) : (
         <TableContainer component={Paper}>
           <Table className="results-table">
             <TableHead>
