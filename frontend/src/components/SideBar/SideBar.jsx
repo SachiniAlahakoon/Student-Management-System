@@ -32,7 +32,7 @@ function SideBar() {
         })}
       </div>
 
-      <div className="user-info-card">
+      {/* <div className="user-info-card">
         <div className="user-info">
           <img src={userIcon} alt="" className="user-icon" />
           <div className="user-details">
@@ -49,7 +49,7 @@ function SideBar() {
             <div id="title">Logout</div>
           </li>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
