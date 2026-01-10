@@ -20,7 +20,7 @@ import EmptyStateCard from "../../components/EmptyStateCard/EmptyStateCard";
 import "./ExamResults.css";
 
 export default function ExamResults() {
-  const reg_no = 12345; // TEMP
+  const reg_no = 2023001; // TEMP
 
   const [years, setYears] = useState([]);
   const [terms, setTerms] = useState([]);

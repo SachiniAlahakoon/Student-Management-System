@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
+import isoWeek from "dayjs/plugin/isoWeek";
 import {
   Box,
   Button,
@@ -17,20 +18,30 @@ import {
   Paper,
   Chip,
 } from "@mui/material";
+
+import TablePagination from "@mui/material/TablePagination";
+
 import { API_BASE } from "../../config";
 import EmptyStateCard from "../../components/EmptyStateCard/EmptyStateCard";
 import "./AttendanceView.css";
 
+dayjs.extend(isoWeek);
+
 export default function AttendanceView() {
-  const reg_no = 12345; // TEMP
+  const reg_no = 2023001; // TEMP
 
   const [viewType, setViewType] = useState("");
+  const [availableYears, setAvailableYears] = useState([]);
   const [selectedYear, setSelectedYear] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
   const [selectedWeek, setSelectedWeek] = useState("");
   const [attendance, setAttendance] = useState([]);
   const [weeks, setWeeks] = useState([]);
   const [loaded, setLoaded] = useState(false);
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [totalRows, setTotalRows] = useState(0);
 
   const months = [
     { value: "01", label: "January" },
@@ -48,105 +59,96 @@ export default function AttendanceView() {
   ];
 
   useEffect(() => {
+    const fetchYears = async () => {
+      try {
+        const res = await axios.get(
+          `${API_BASE}/api/attendance/${reg_no}/years`
+        );
+        setAvailableYears(res.data || []);
+      } catch {
+        setAvailableYears([]);
+      }
+    };
+
+    fetchYears();
+  }, [reg_no]);
+
+  useEffect(() => {
     if (!selectedYear || !selectedMonth) return;
 
     const start = dayjs(`${selectedYear}-${selectedMonth}-01`);
     const end = start.endOf("month");
-    const weeksArray = [];
-    let weekStart = start.startOf("week");
-    let weekNum = 1;
 
-    while (weekStart.isBefore(end)) {
-      const weekEnd = weekStart.add(6, "day").isAfter(end)
+    let current = start.startOf("isoWeek");
+    let index = 1;
+    const list = [];
+
+    while (current.isBefore(end) || current.isSame(end, "day")) {
+      const weekStart = current;
+      const weekEnd = current.add(6, "day").isAfter(end)
         ? end
-        : weekStart.add(6, "day");
-      weeksArray.push({
-        value: weekNum,
-        label: `Week ${weekNum} (${weekStart.format(
+        : current.add(6, "day");
+
+      list.push({
+        value: index,
+        label: `Week ${index} (${weekStart.format("DD MMM")} - ${weekEnd.format(
           "DD MMM"
-        )} - ${weekEnd.format("DD MMM")})`,
+        )})`,
       });
-      weekStart = weekStart.add(7, "day");
-      weekNum++;
+
+      current = current.add(7, "day");
+      index++;
     }
 
-    setWeeks(weeksArray);
+    setWeeks(list);
     setSelectedWeek("");
   }, [selectedYear, selectedMonth]);
 
+
+  useEffect(() => {
+    setAttendance([]);
+    setLoaded(false);
+    setPage(0);
+  }, [viewType, selectedYear, selectedMonth, selectedWeek]);
+
+ 
   const fetchAttendance = async () => {
     if (!viewType) return;
 
-    const params = {};
-    let resData = [];
+    try {
+      const res = await axios.get(
+        `${API_BASE}/api/attendance/${reg_no}/${viewType}`,
+        {
+          params: {
+            year: selectedYear,
+            month: selectedMonth,
+            week: selectedWeek,
+            page,
+            limit: rowsPerPage,
+          },
+        }
+      );
 
-    if (viewType === "month") {
-      if (!selectedYear || !selectedMonth)
-        return alert("Select year and month");
-      params.year = selectedYear;
-      params.month = selectedMonth;
-
-      try {
-        const res = await axios.get(
-          `${API_BASE}/api/attendance/${reg_no}/month`,
-          { params }
-        );
-        resData = res.data || [];
-      } catch (err) {
-        console.error("Attendance fetch error:", err);
-        resData = [];
-      }
-    } else if (viewType === "year") {
-      if (!selectedYear) return alert("Select year");
-      params.year = selectedYear;
-
-      try {
-        const res = await axios.get(
-          `${API_BASE}/api/attendance/${reg_no}/year`,
-          { params }
-        );
-        resData = res.data || [];
-      } catch (err) {
-        console.error("Attendance fetch error:", err);
-        resData = [];
-      }
-    } else if (viewType === "week") {
-      if (!selectedYear || !selectedMonth || !selectedWeek)
-        return alert("Select year, month, and week");
-
-      params.year = selectedYear;
-      params.month = selectedMonth;
-
-      try {
-        const res = await axios.get(
-          `${API_BASE}/api/attendance/${reg_no}/month`,
-          { params }
-        );
-        const allMonthData = res.data || [];
-
-        const weekIndex = Number(selectedWeek) - 1;
-        const startDate = dayjs(`${selectedYear}-${selectedMonth}-01`)
-          .startOf("week")
-          .add(weekIndex * 7, "day");
-        const endDate = startDate.add(6, "day");
-
-        resData = allMonthData.filter((a) => {
-          const date = dayjs(a.date);
-          return (
-            date.isSame(startDate) ||
-            date.isSame(endDate) ||
-            (date.isAfter(startDate) && date.isBefore(endDate))
-          );
-        });
-      } catch (err) {
-        console.error("Attendance fetch error:", err);
-        resData = [];
-      }
+      setAttendance(res.data.data || []);
+      setTotalRows(res.data.total || 0);
+      setLoaded(true);
+    } catch (err) {
+      console.error("Attendance fetch error", err);
+      setAttendance([]);
+      setLoaded(true);
     }
-
-    setAttendance(resData);
-    setLoaded(true);
   };
+
+  useEffect(() => {
+    if (!loaded) return;
+    fetchAttendance();
+  }, [page, rowsPerPage]);
+
+  const isLoadDisabled =
+    !viewType ||
+    (viewType === "year" && !selectedYear) ||
+    (viewType === "month" && (!selectedYear || !selectedMonth)) ||
+    (viewType === "week" && (!selectedYear || !selectedMonth || !selectedWeek));
 
   return (
     <div className="marks-table-container">
@@ -162,11 +164,9 @@ export default function AttendanceView() {
             label="View By"
             onChange={(e) => {
               setViewType(e.target.value);
-              setAttendance([]);
               setSelectedYear("");
               setSelectedMonth("");
               setSelectedWeek("");
-              setLoaded(false);
             }}
           >
             <MenuItem value="week">Week</MenuItem>
@@ -175,9 +175,7 @@ export default function AttendanceView() {
           </Select>
         </FormControl>
 
-        {(viewType === "month" ||
-          viewType === "year" ||
-          viewType === "week") && (
+        {viewType && (
           <FormControl size="small" sx={{ minWidth: 180 }}>
             <InputLabel>Year</InputLabel>
             <Select
@@ -185,7 +183,7 @@ export default function AttendanceView() {
               label="Year"
               onChange={(e) => setSelectedYear(e.target.value)}
             >
-              {Array.from({ length: 5 }, (_, i) => 2025 - i).map((y) => (
+              {availableYears.map((y) => (
                 <MenuItem key={y} value={y}>
                   {y}
                 </MenuItem>
@@ -231,8 +229,12 @@ export default function AttendanceView() {
         )}
 
         <Button
-          onClick={fetchAttendance}
+          onClick={() => {
+            setPage(0);
+            fetchAttendance();
+          }}
           variant="contained"
+          disabled={isLoadDisabled}
           sx={{ height: 40, minWidth: 180 }}
         >
           Load Attendance
@@ -240,21 +242,19 @@ export default function AttendanceView() {
       </Box>
 
       {!loaded ? (
-        <EmptyStateCard message="Select view type and filters to load attendance records" />
+        <EmptyStateCard message="Select filters to load attendance records" />
       ) : attendance.length === 0 ? (
-        <EmptyStateCard message="No attendance records found for the selected period" />
+        <EmptyStateCard message="No attendance records found" />
       ) : (
-
         <TableContainer component={Paper}>
-          <Table className="results-table">
+          <Table>
             <TableHead>
               <TableRow>
-                <TableCell className="col-name">Date</TableCell>
-                <TableCell className="col-marks">Status</TableCell>
+                <TableCell>Date</TableCell>
+                <TableCell>Status</TableCell>
               </TableRow>
             </TableHead>
-
-            <TableBody className="table-body">
+            <TableBody>
               {attendance.map((a, i) => (
                 <TableRow key={i}>
                   <TableCell>{dayjs(a.date).format("YYYY-MM-DD")}</TableCell>
@@ -269,6 +269,18 @@ export default function AttendanceView() {
               ))}
             </TableBody>
           </Table>
+          <TablePagination
+            component="div"
+            count={totalRows}
+            page={page}
+            onPageChange={(e, newPage) => setPage(newPage)}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={(e) => {
+              setRowsPerPage(parseInt(e.target.value, 10));
+              setPage(0);
+            }}
+            rowsPerPageOptions={[5, 10, 25]}
+          />
         </TableContainer>
       )}
     </div>

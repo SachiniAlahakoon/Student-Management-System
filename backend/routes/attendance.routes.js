@@ -1,7 +1,14 @@
 const express = require("express");
-const router = express.Router();
-const attendanceController = require("../controllers/attendance.controller");
+const {
+  getAttendance,
+  getAttendanceYears,
+  getWeeksInMonth,
+} = require("../controllers/attendance.controller");
 
-router.get("/:regNo/:view", attendanceController.getAttendance);
+const router = express.Router();
+
+router.get("/:regNo/years", getAttendanceYears);
+router.get("/weeks", getWeeksInMonth);
+router.get("/:regNo/:view", getAttendance);
 
 module.exports = router;
