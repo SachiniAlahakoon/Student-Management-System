@@ -1,20 +1,20 @@
 const jwt = require("jsonwebtoken");
+const jwtConfig = require("../config/jwt");
 
 const authenticate = (req, res, next) => {
-  const authHeader = req.headers.authorization;
+const authHeader = req.headers.authorization;
+if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  return res.status(401).json({ message: "Access token missing or malformed" });
+}
 
-  if (!authHeader) {
-    return res.status(401).json({ message: "Access token missing" });
-  }
-
-  const token = authHeader.split(" ")[1];
+const token = authHeader.split(" ")[1];
 
   if (!token) {
     return res.status(401).json({ message: "Invalid token format" });
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, jwtConfig.secret);
     req.user = decoded;
     next();
   } catch (err) {
