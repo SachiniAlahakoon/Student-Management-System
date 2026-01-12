@@ -1,0 +1,44 @@
+.marks-table-root {
+  width: 100%;
+}
+
+.search-field {
+  margin-bottom: 8px;
+}
+
+.bulk-actions {
+  margin-top: 20px;
+  margin-bottom: 8px;
+  display: flex;
+  gap: 8px;
+}
+
+.table-container {
+  max-height: 500px;
+}
+
+.icon-primary {
+  color: #1976d2;
+}
+
+.bulk-dialog-content {
+  padding-top: 8px;
+}
+
+.bulk-edit-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.bulk-edit-name {
+  width: 60%;
+  font-weight: 500;
+}
+
+.error-text {
+  color: red;
+  font-size: 0.8rem;
+  margin: 2px 0 0;
+}

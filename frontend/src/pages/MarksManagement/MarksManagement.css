@@ -1,0 +1,21 @@
+.action-btns {
+  margin: 20px 0px;
+  padding: 10px 20px;
+  background-color: rgb(64, 64, 255);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+.action-btns:hover {
+  background-color: rgb(41, 41, 151);
+}
+
+.input-groups {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
