@@ -1,5 +1,8 @@
 const pool = require("../config/db");
 
+/**
+ * GET marks (paginated)
+ */
 exports.getMarks = async (req, res) => {
   let {
     class_id,
@@ -11,17 +14,17 @@ exports.getMarks = async (req, res) => {
     search = "",
   } = req.query;
 
-  page = parseInt(page);
-  limit = parseInt(limit);
-
   if (!class_id || !subject_id || !term || !year) {
     return res.status(400).json({ message: "Missing query parameters" });
   }
 
-  try {
-    const searchQuery = `%${search}%`;
+  page = parseInt(page);
+  limit = parseInt(limit);
+  const offset = (page - 1) * limit;
+  const searchQuery = `%${search}%`;
 
-    const [countRows] = await pool.query(
+  try {
+    const [[{ total }]] = await pool.query(
       `SELECT COUNT(*) AS total
        FROM exam_results er
        JOIN students s ON er.student_id = s.student_id
@@ -32,9 +35,6 @@ exports.getMarks = async (req, res) => {
          AND (CONCAT(s.student_firstname, ' ', s.student_lastname) LIKE ? OR s.reg_no LIKE ?)`,
       [class_id, subject_id, term, year, searchQuery, searchQuery]
     );
-
-    const total = countRows[0].total;
-    const offset = (page - 1) * limit;
 
     const [rows] = await pool.query(
       `SELECT
@@ -55,16 +55,7 @@ exports.getMarks = async (req, res) => {
          AND (CONCAT(s.student_firstname, ' ', s.student_lastname) LIKE ? OR s.reg_no LIKE ?)
        ORDER BY s.student_firstname, s.student_lastname
        LIMIT ? OFFSET ?`,
-      [
-        class_id,
-        subject_id,
-        term,
-        year,
-        searchQuery,
-        searchQuery,
-        limit,
-        offset,
-      ]
+      [class_id, subject_id, term, year, searchQuery, searchQuery, limit, offset]
     );
 
     res.json({ data: rows, total });
@@ -74,7 +65,11 @@ exports.getMarks = async (req, res) => {
   }
 };
 
+/**
+ * ADD marks (bulk)
+ */
 exports.addMarks = async (req, res) => {
+  const teacherId = req.user.id;
   const { class_id, subject_id, year, term, marks } = req.body;
 
   if (!class_id || !subject_id || !year || !term || !marks?.length) {
@@ -92,45 +87,51 @@ exports.addMarks = async (req, res) => {
       null,
     ]);
 
-    await pool.query(
-      `INSERT INTO exam_results
-       (student_id, subject_id, class_id, year, term, marks, grade)
-       VALUES ?`,
-      [values]
-    );
+    const sql = `
+      INSERT INTO exam_results
+      (student_id, subject_id, class_id, year, term, marks, grade)
+      VALUES ?
+      ON DUPLICATE KEY UPDATE marks = VALUES(marks), grade = NULL
+    `;
+
+    await pool.query(sql, [values]);
 
     res.json({ message: "Marks added successfully" });
   } catch (err) {
-    console.error(err);
+    console.error("addMarks error:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
 
+
+/**
+ * UPDATE single mark
+ */
 exports.updateSingleMark = async (req, res) => {
   const { result_id, marks } = req.body;
 
   if (!result_id) {
-    return res.status(400).json({ message: "result_id required" });
+    return res.status(400).json({ message: "Missing result_id" });
   }
 
   try {
-    const [result] = await pool.query(
+    await pool.query(
       `UPDATE exam_results
        SET marks = ?, grade = NULL
        WHERE result_id = ?`,
       [marks ?? null, result_id]
     );
 
-    res.json({
-      message: "Mark updated",
-      affectedRows: result.affectedRows,
-    });
+    res.json({ message: "Mark updated" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 };
 
+/**
+ * RESET marks (bulk)
+ */
 exports.deleteMarks = async (req, res) => {
   const { class_id, subject_id, term, year } = req.body;
 
@@ -156,6 +157,9 @@ exports.deleteMarks = async (req, res) => {
   }
 };
 
+/**
+ * GET all marks for reports
+ */
 exports.getAllMarksForReport = async (req, res) => {
   const { class_id, subject_id, term, year } = req.query;
 

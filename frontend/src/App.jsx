@@ -16,10 +16,36 @@ export default function App() {
       <Routes>
         <Route path="/" element={<SplashScreen />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />}>
+
+        <Route
+          path="/dashboard/student"
+          element={
+            <RequireAuth>
+              <RequireRole allowedRoles={["student"]}>
+                <Dashboard />
+              </RequireRole>
+            </RequireAuth>
+          }
+        >
+          <Route path="s-profile" element={<StProfile />} />
           <Route path="exam-results" element={<ExamResults />} />
-          <Route path="profile" element={<Profile />} />
+          <Route path="notices" element={<Notices />} />
+        </Route>
+
+        <Route
+          path="/dashboard/teacher"
+          element={
+            <RequireAuth>
+              <RequireRole allowedRoles={["teacher"]}>
+                <Dashboard />
+              </RequireRole>
+            </RequireAuth>
+          }
+        >
+          <Route path="t-profile" element={<TeProfile />} />
+          <Route path="attendance-manage" element={<div>Attendance Page</div>} />
           <Route path="marks-management" element={<MarksManagement />} />
+          <Route path="notices" element={<Notices />} />
         </Route>
       </Routes>
       <ToastContainer

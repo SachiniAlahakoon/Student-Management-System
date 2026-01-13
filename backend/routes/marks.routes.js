@@ -1,15 +1,20 @@
 const express = require("express");
 const router = express.Router();
+
+const { authenticate } = require("../middleware/auth.middleware");
+const authorizeRole = require("../middleware/role.middleware");
+
 const marksController = require("../controllers/marks.controller");
+const isTeacherAssigned = require("../middleware/isTeacherAssigned");
 
-router.get("/", marksController.getMarks);
+router.get("/", authenticate, authorizeRole("teacher"), isTeacherAssigned, marksController.getMarks);
 
-router.post("/add", marksController.addMarks);
+router.post("/add", authenticate, authorizeRole("teacher"), isTeacherAssigned, marksController.addMarks);
 
-router.put("/update-one", marksController.updateSingleMark);
+router.put("/update-one", authenticate, authorizeRole("teacher"), isTeacherAssigned, marksController.updateSingleMark);
 
-router.delete("/reset", marksController.deleteMarks);
+router.delete("/reset", authenticate, authorizeRole("teacher"), isTeacherAssigned, marksController.deleteMarks);
 
-router.get("/all-for-report", marksController.getAllMarksForReport);
+router.get("/all-for-report", authenticate, authorizeRole("teacher"), isTeacherAssigned, marksController.getAllMarksForReport);
 
 module.exports = router;

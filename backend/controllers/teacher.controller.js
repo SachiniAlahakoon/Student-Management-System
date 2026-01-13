@@ -1,9 +1,9 @@
-const db = require("../config/db");
+const pool = require("../config/db");
 
 exports.getClassesForTeacher = async (req, res) => {
-  const { teacherId } = req.params;
+  const teacherId = req.user.id;
   try {
-    const [rows] = await db.query(
+    const [rows] = await pool.query(
       `SELECT DISTINCT c.class_id, c.class_name 
        FROM classes c
        JOIN teacher_subjects ts ON ts.class_id = c.class_id
@@ -18,9 +18,10 @@ exports.getClassesForTeacher = async (req, res) => {
 };
 
 exports.getSubjectsForTeacherClass = async (req, res) => {
-  const { teacherId, classId } = req.params;
+  const teacherId = req.user.id;
+  const { classId } = req.params;
   try {
-    const [rows] = await db.query(
+    const [rows] = await pool.query(
       `SELECT sub.subject_id, sub.subject_name
        FROM teacher_subjects ts
        JOIN subjects sub ON ts.subject_id = sub.subject_id

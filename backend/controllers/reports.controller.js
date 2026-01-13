@@ -1,8 +1,8 @@
-const db = require("../config/db");
+const pool = require("../config/db");
 
 exports.getAvailableYears = async (req, res) => {
   try {
-    const [rows] = await db.query(
+    const [rows] = await pool.query(
       `SELECT DISTINCT year FROM exam_results ORDER BY year DESC`
     );
     const years = rows.map((r) => r.year);
@@ -21,7 +21,7 @@ exports.getSubjectReport = async (req, res) => {
   }
 
   try {
-    const [rows] = await db.query(
+    const [rows] = await pool.query(
       `
       SELECT
         s.student_id,
@@ -44,7 +44,7 @@ exports.getSubjectReport = async (req, res) => {
       [subject_id, term, year, class_id]
     );
 
-    if (rows.length === 0) {
+    if (!rows.length) {
       return res.json({
         meta: {},
         stats: {},
@@ -63,35 +63,21 @@ exports.getSubjectReport = async (req, res) => {
     const totalStudents = rows.length;
     const attended = rows.filter((r) => r.marks !== null);
     const absent = totalStudents - attended.length;
-
     const passed = attended.filter((r) => r.marks >= 35).length;
     const failed = attended.length - passed;
-
     const totalMarks = attended.reduce((sum, r) => sum + r.marks, 0);
     const average = attended.length
       ? Number((totalMarks / attended.length).toFixed(2))
       : 0;
-
     const passRate = attended.length
       ? Number(((passed / attended.length) * 100).toFixed(2))
       : 0;
 
-    const stats = {
-      totalStudents,
-      attended: attended.length,
-      absent,
-      passed,
-      failed,
-      passRate,
-      average,
-    };
+    const stats = { totalStudents, attended: attended.length, absent, passed, failed, passRate, average };
 
     const attendedSorted = attended.sort((a, b) => b.marks - a.marks);
 
-    let rank = 1;
-    let lastMarks = null;
-    let skip = 0;
-
+    let rank = 1, lastMarks = null, skip = 0;
     attendedSorted.forEach((student) => {
       if (student.marks === lastMarks) {
         student.rank = rank;
@@ -105,9 +91,7 @@ exports.getSubjectReport = async (req, res) => {
     });
 
     const students = rows.map((r) => {
-      const attendedStudent = attendedSorted.find(
-        (s) => s.student_id === r.student_id
-      );
+      const attendedStudent = attendedSorted.find((s) => s.student_id === r.student_id);
       return {
         reg_no: r.reg_no,
         student_name: r.student_name,
@@ -123,19 +107,9 @@ exports.getSubjectReport = async (req, res) => {
       gradeMap[label] = (gradeMap[label] || 0) + 1;
     });
 
-    const gradeDistribution = Object.entries(gradeMap).map(
-      ([label, value]) => ({
-        label,
-        value,
-      })
-    );
+    const gradeDistribution = Object.entries(gradeMap).map(([label, value]) => ({ label, value }));
 
-    res.json({
-      meta: { class_id, subject_id, year, term },
-      stats,
-      gradeDistribution,
-      students,
-    });
+    res.json({ meta: { class_id, subject_id, year, term }, stats, gradeDistribution, students });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to generate subject report" });

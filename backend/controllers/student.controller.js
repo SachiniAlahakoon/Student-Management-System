@@ -1,8 +1,8 @@
-const db = require("../config/db");
+const pool = require("../config/db");
 
 exports.getAvailableYears = async (req, res) => {
   try {
-    const { reg_no } = req.query;
+    const reg_no = req.user.reg_no;
 
     const sql = `
       SELECT DISTINCT er.year
@@ -12,7 +12,7 @@ exports.getAvailableYears = async (req, res) => {
       ORDER BY er.year DESC
     `;
 
-    const [rows] = await db.execute(sql, [reg_no]);
+    const [rows] = await pool.execute(sql, [reg_no]);
     res.json(rows.map(r => r.year));
   } catch (err) {
     console.error(err);
@@ -22,7 +22,8 @@ exports.getAvailableYears = async (req, res) => {
 
 exports.getAvailableTerms = async (req, res) => {
   try {
-    const { reg_no, year } = req.query;
+    const reg_no = req.user.reg_no;
+    const { year } = req.query;
 
     const sql = `
       SELECT DISTINCT er.term
@@ -32,7 +33,7 @@ exports.getAvailableTerms = async (req, res) => {
       ORDER BY FIELD(er.term, '1st', '2nd', '3rd')
     `;
 
-    const [rows] = await db.execute(sql, [reg_no, year]);
+    const [rows] = await pool.execute(sql, [reg_no, year]);
     res.json(rows.map(r => r.term));
   } catch (err) {
     console.error(err);
@@ -42,7 +43,8 @@ exports.getAvailableTerms = async (req, res) => {
 
 exports.getExamResults = async (req, res) => {
   try {
-    const { reg_no, year, term } = req.query;
+    const reg_no = req.user.reg_no;
+    const { year, term } = req.query;
 
     const sql = `
       SELECT
@@ -57,7 +59,7 @@ exports.getExamResults = async (req, res) => {
         AND er.term = ?
     `;
 
-    const [rows] = await db.execute(sql, [reg_no, year, term]);
+    const [rows] = await pool.execute(sql, [reg_no, year, term]);
     res.json(rows);
   } catch (err) {
     console.error(err);

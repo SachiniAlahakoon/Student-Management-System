@@ -5,8 +5,6 @@ import MarksTable from "../../components/MarksTable/MarksTable";
 import EmptyStateCard from "../../components/EmptyStateCard/EmptyStateCard";
 import { API_BASE } from "../../api/config";
 
-const teacherId = 1; // TEMP
-
 const initialForm = { classId: "", subjectId: "", term: "", year: "" };
 function formReducer(state, action) {
   switch (action.type) {
@@ -30,31 +28,49 @@ export default function MarksManagement() {
   const [classes, setClasses] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [availableYears, setAvailableYears] = useState([]);
-  const [loadTable, setLoadTable] = useState(false); 
+  const [loadTable, setLoadTable] = useState(false);
+  const [error, setError] = useState("");
 
- 
+  // Helper to get Authorization header
+  const getAuthHeader = () => {
+    const token = localStorage.getItem("token");
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  };
+
+  // Fetch teacher's classes
   useEffect(() => {
     axios
-      .get(`${API_BASE}/api/teacher/classes/${teacherId}`)
+      .get(`${API_BASE}/api/teacher/classes`, { headers: getAuthHeader() })
       .then((res) => setClasses(res.data))
-      .catch(console.error);
+      .catch((err) => {
+        console.error(err);
+        setError("Failed to load classes");
+      });
   }, []);
 
+  // Fetch subjects for selected class
   useEffect(() => {
     if (!form.classId) return;
     axios
-      .get(
-        `${API_BASE}/api/teacher/subjects/${teacherId}/${form.classId}`
-      )
+      .get(`${API_BASE}/api/teacher/subjects/${form.classId}`, {
+        headers: getAuthHeader(),
+      })
       .then((res) => setSubjects(res.data))
-      .catch(console.error);
+      .catch((err) => {
+        console.error(err);
+        setError("Failed to load subjects");
+      });
   }, [form.classId]);
 
+  // Fetch available years
   useEffect(() => {
     axios
-      .get(`${API_BASE}/api/teacher/reports/years`)
+      .get(`${API_BASE}/api/teacher/reports/years`, { headers: getAuthHeader() })
       .then((res) => setAvailableYears(res.data))
-      .catch(console.error);
+      .catch((err) => {
+        console.error(err);
+        setError("Failed to load available years");
+      });
   }, []);
 
   const isActionEnabled =
@@ -64,6 +80,8 @@ export default function MarksManagement() {
     if (!isActionEnabled) return;
     setLoadTable(true);
   };
+
+  if (error) return <p className="error">{error}</p>;
 
   return (
     <div className="contentArea">
