@@ -6,21 +6,36 @@ const getTeacherProfile = async (req, res) => {
     const userId = req.user.id; // from authenticate middleware
 
     const [rows] = await pool.query(
-      `SELECT
-         t.teacher_id,
-         t.id_no,
-         t.teacher_name,
-         t.birthday,
-         t.phone,
-         t.email,
-         p.years_experience,
-         p.qualification,
-         p.current_role,
-         p.bio
-       FROM teachers t
-       LEFT JOIN pro_information p
-         ON t.teacher_id = p.teacher_id
-       WHERE t.user_id = ?`,
+      `
+      SELECT
+        t.teacher_id,
+        t.id_no,
+        t.teacher_name,
+        t.birthday,
+        t.phone,
+        t.email,
+
+        p.years_experience,
+        p.qualification,
+        p.current_role,
+        p.bio,
+
+        GROUP_CONCAT(DISTINCT s.subject_name ORDER BY s.subject_name SEPARATOR ', ') AS subject_name,
+        GROUP_CONCAT(DISTINCT c.class_name ORDER BY c.class_name SEPARATOR ', ') AS class_name
+
+      FROM teachers t
+      LEFT JOIN pro_information p
+        ON t.teacher_id = p.teacher_id
+      LEFT JOIN teacher_subjects ts
+        ON t.teacher_id = ts.teacher_id
+      LEFT JOIN subjects s
+        ON ts.subject_id = s.subject_id
+      LEFT JOIN classes c
+        ON ts.class_id = c.class_id
+
+      WHERE t.user_id = ?
+      GROUP BY t.teacher_id
+      `,
       [userId]
     );
 
@@ -43,20 +58,24 @@ const getTeacherById = async (req, res) => {
   try {
     let query = `
       SELECT
-        t.teacher_id,
-        t.id_no,
-        t.teacher_name,
-        t.birthday,
-        t.phone,
-        t.email,
-        p.years_experience,
-        p.qualification,
-        p.current_role,
-        p.bio
+        t.teacher_id, t.id_no, t.teacher_name, t.birthday, t.phone, t.email,
+        p.years_experience, p.qualification, p.current_role, p.bio,
+
+        GROUP_CONCAT(DISTINCT s.subject_name ORDER BY s.subject_name SEPARATOR ', ') AS subject_name,
+        GROUP_CONCAT(DISTINCT c.class_name ORDER BY c.class_name SEPARATOR ', ') AS class_name
+
       FROM teachers t
       LEFT JOIN pro_information p
         ON t.teacher_id = p.teacher_id
-      WHERE t.teacher_id = ?
+      LEFT JOIN teacher_subjects ts
+        ON t.teacher_id = ts.teacher_id
+      LEFT JOIN subjects s
+        ON ts.subject_id = s.subject_id
+      LEFT JOIN classes c
+        ON ts.class_id = c.class_id
+
+      WHERE t.user_id = ?
+      GROUP BY t.teacher_id
     `;
     let params = [tId];
 

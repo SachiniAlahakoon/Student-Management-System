@@ -11,7 +11,6 @@
     z-index: 10;
     overflow: hidden;
     box-sizing: border-box;
-    
 }
 
 .logo-area {
@@ -23,13 +22,7 @@
     flex: 1;
     min-width: 0;
 }
-.user-info-card .logout {
-    opacity: 0;
-    transform: translateY(15px);
-    pointer-events: none;
-    transition: opacity 0.4s ease, transform 0.5s ease;
-    margin-top: auto;
-  }
+
 .logo {
     width: 60px;
     height: 60px;

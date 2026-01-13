@@ -17,6 +17,7 @@ const login = async (req, res) => {
        FROM users u
        LEFT JOIN students s ON s.user_id = u.user_id
        LEFT JOIN teachers t ON t.user_id = u.user_id
+       LEFT JOIN admins a ON a.user_id = u.user_id
        WHERE u.username = ? OR u.email = ?
        LIMIT 1;`,
       [username, username]
@@ -50,7 +51,7 @@ const login = async (req, res) => {
     }
 
     if (user.role === "admin") {
-      // Add admin-specific info if needed
+      payload.NIC = user.NIC;
     }
 
     const jwtConfig = require("../config/jwt");

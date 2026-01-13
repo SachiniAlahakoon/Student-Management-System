@@ -25,6 +25,7 @@ export default function Login() {
       // Save JWT + user info
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("role", user.role);
 
       // Redirect based on role
       if (user.role === "admin") {
@@ -49,7 +50,7 @@ export default function Login() {
     <div className="login-root">
       <div className="left-pane">
         <img
-          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6RebpMnWu7Hi2RSCr8JCtpj0HvcT3Lxb4FQ&s"
+          src="/Swarnamali GCK Logo.png"
           alt="school"
           className="left-image"
         />
@@ -76,10 +77,8 @@ export default function Login() {
             required
           />
 
-          <div className="row">
-            <a className="forgot" href="/forgot">
-              Forgot Password?
-            </a>
+          <div className="abc">
+         
             <button className="btn-login" type="submit">
               Login
             </button>

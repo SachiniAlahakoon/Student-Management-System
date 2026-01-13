@@ -14,27 +14,13 @@ const express = require("express");
 const router = express.Router();
 const { authenticate } = require("../middleware/auth.middleware");
 const authorizeRole = require("../middleware/role.middleware");
-
-const {
-  getStudentProfile,
-  getStudentById
-} = require("../controllers/student.controller");
+const { getStudentProfile, getStudentById } = require("../controllers/student.controller");
 
 // Student sees own profile
-router.get(
-  "/profile/me",
-  authenticate,
-  authorizeRole("student"),
-  getStudentProfile
-);
+router.get("/profile/me", authenticate, authorizeRole("student"), getStudentProfile);
 
 // Admin sees any student
-router.get(
-  "/:studentId",
-  authenticate,
-  authorizeRole("admin"),
-  getStudentById
-);
+router.get("/:studentId", authenticate, authorizeRole("admin"), getStudentById);
 
 module.exports = router;
 

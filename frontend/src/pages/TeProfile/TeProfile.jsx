@@ -102,7 +102,7 @@ function TeProfile() {
               <MenuBookIcon /> SUBJECT(S) TAUGHT
             </span>
             <span className="detail-value1">
-              {teacher.subject_taught || "--"}
+              {teacher.subject_name || "--"}
             </span>
           </div>
 
@@ -111,7 +111,7 @@ function TeProfile() {
               <GroupsIcon /> CLASS(S) HANDLED
             </span>
             <span className="detail-value1">
-              {teacher.class_handle || "--"}
+              {teacher.class_name || "--"}
             </span>
           </div>
 

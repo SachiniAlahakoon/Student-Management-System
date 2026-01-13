@@ -15,24 +15,13 @@ const router = express.Router();
 const { authenticate } = require("../middleware/auth.middleware");
 const authorizeRole = require("../middleware/role.middleware");
 
-const {
-  getTeacherProfile,
-  getTeacherById
-} = require("../controllers/teacher.controller");
+const { getTeacherProfile, getTeacherById } = require("../controllers/teacher.controller");
 
 // Teacher sees own profile
-router.get("/profile/me", authenticate,
-  authorizeRole("teacher"),
-  getTeacherProfile
-);
+router.get("/profile/me", authenticate, authorizeRole("teacher"), getTeacherProfile);
 
 // Admin OR teacher (self)
-router.get(
-  "/:tId",
-  authenticate,
-  authorizeRole("teacher", "admin"),
-  getTeacherById
-);
+router.get("/:tId", authenticate, authorizeRole("teacher", "admin"), getTeacherById);
 
 module.exports = router;
 
