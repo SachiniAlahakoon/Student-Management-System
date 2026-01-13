@@ -1,4 +1,4 @@
-const db = require("../config/db");
+const pool = require("../config/db");
 const dayjs = require("dayjs");
 const isoWeek = require("dayjs/plugin/isoWeek");
 
@@ -6,10 +6,13 @@ dayjs.extend(isoWeek);
 
 const getAttendance = async (req, res) => {
   try {
-    const { regNo, view } = req.params;
+    const { view } = req.params;
     const { year, month, week, page = 0, limit = 10 } = req.query;
 
     const offset = Number(page) * Number(limit);
+
+    const regNo = req.user.reg_no;
+    if (!regNo) return res.status(403).json({ error: "Unauthorized" });
 
     let baseSql = `
       FROM student_attendance a
@@ -42,7 +45,7 @@ const getAttendance = async (req, res) => {
 
 
     const countSql = `SELECT COUNT(*) AS total ${baseSql}`;
-    const [[{ total }]] = await db.query(countSql, params);
+    const [[{ total }]] = await pool.query(countSql, params);
 
     
     const dataSql = `
@@ -52,7 +55,7 @@ const getAttendance = async (req, res) => {
       LIMIT ? OFFSET ?
     `;
 
-    const [rows] = await db.query(dataSql, [...params, Number(limit), offset]);
+    const [rows] = await pool.query(dataSql, [...params, Number(limit), offset]);
 
     res.json({
       data: rows,
@@ -67,11 +70,8 @@ const getAttendance = async (req, res) => {
 
 const getAttendanceYears = async (req, res) => {
   try {
-    const { regNo } = req.params;
-
-    if (!regNo) {
-      return res.status(400).json({ error: "regNo is required" });
-    }
+    const regNo = req.user.reg_no;
+    if (!regNo) return res.status(403).json({ error: "Unauthorized" });
 
     const sql = `
       SELECT DISTINCT YEAR(a.attendance_date) AS year
@@ -81,7 +81,7 @@ const getAttendanceYears = async (req, res) => {
       ORDER BY year DESC
     `;
 
-    const [rows] = await db.query(sql, [regNo]);
+    const [rows] = await pool.query(sql, [regNo]);
 
     const years = rows.map((r) => r.year);
     res.json(years);
