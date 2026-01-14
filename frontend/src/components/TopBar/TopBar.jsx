@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+/*import { Link } from "react-router-dom";
 import './TopBar.css';
 import logo from '../../assets/images/Swarnamali GCK Logo.png';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -17,9 +17,9 @@ function TopBar() {
   )
 }
 
-export default TopBar
+export default TopBar*/
 
-/*import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "./TopBar.css";
 import logo from "../../assets/images/Swarnamali GCK Logo.png";
 import userIcon from "../../assets/images/user.png";
@@ -42,7 +42,7 @@ function TopBar() {
 
   return (
     <nav className="top-bar">
-      {/* Logo and school title *
+      {/* Logo and school title */}
       <div className="logo-area">
         <img src={logo} alt="logo" className="logo" />
         <Link to={dashboardLink} className="title">
@@ -50,7 +50,7 @@ function TopBar() {
         </Link>
       </div>
 
-      {/* Right section with user info 
+      {/* Right section with user info */}
       <div className="right-section">
         <div className="user-info">
           <img src={userIcon} alt="user" className="user-icon" />
@@ -62,7 +62,7 @@ function TopBar() {
           </div>
         </div>
 
-        {/* Optional compact user card 
+        {/* Optional compact user card */}
         <div className="user-info-card">
           <UserInfoCard compact />
         </div>
@@ -71,4 +71,4 @@ function TopBar() {
   );
 }
 
-export default TopBar;*/
+export default TopBar;

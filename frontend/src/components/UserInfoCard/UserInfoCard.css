@@ -1,0 +1,32 @@
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .user-info.compact {
+    padding: 0;
+  }
+  
+  .user-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #333;
+  }
+  
+  .user-details {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+  }
+  
+  .user-name {
+    font-weight: bold;
+  }
+  
+  .user-role {
+    font-size: 0.8em;
+    color: #555;
+  }

@@ -50,7 +50,7 @@ export default function Login() {
     <div className="login-root">
       <div className="left-pane">
         <img
-          src="/Swarnamali GCK Logo.png"
+          src="/logo.png"
           alt="school"
           className="left-image"
         />
