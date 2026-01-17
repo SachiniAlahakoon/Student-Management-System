@@ -1,0 +1,35 @@
+.view-card {
+  background: #fff;
+  padding: 20px;
+  max-width: 500px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+  position: relative; /* 🔑 REQUIRED */
+}
+
+.view-card p {
+  margin-bottom: 8px;
+}
+
+/* BUTTON CONTAINER */
+.view-actions {
+  display: flex;
+  justify-content: center;   /* 🔥 CENTER HORIZONTALLY */
+  margin-top: 25px;
+}
+
+
+/* OPTIONAL: Button styling */
+.view-actions button {
+  background-color: #4a4aff;
+  color: white;
+  padding: 8px 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.view-actions button:hover {
+  background-color: #3a3aff;
+}
+

@@ -1,0 +1,144 @@
+/* StProfile.css */
+.contentArea {
+  padding: 20px;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+
+}
+
+.mainHeading {
+  margin-bottom: 20px;
+  
+}
+
+.mainHeading-std {
+  margin: 0;
+}
+
+.heading h1 {
+  font-size: 2em;
+  color: #333;
+  margin-top: 5px;
+}
+
+/* Card Styling */
+.info-card {
+  background: #ffffff;
+  border: 1px solid #f0f0f0;
+  border-radius: 30px;
+  padding: 40px 50px;
+  margin-bottom: 35px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.03);
+  
+}
+
+.section-title {
+  font-size: 18px;
+  color: #444;
+  margin-bottom: 35px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* General Info */
+.general-content {
+  display: flex;
+  align-items: center;
+  gap: 60px;
+}
+
+.avatar-circle {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 2px solid #e0e0e0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background-color: #fff;
+  margin-right: 20px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.avatar-circle:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.details-list {
+  flex: 1;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.detail-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 280px;
+  color: #555;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.detail-value {
+  color: #333;
+  font-weight: 500;
+  font-size: 15px;
+  margin-left: 150px;
+}
+
+.icon {
+  font-size: 22px !important;
+  color: #444;
+}
+
+/* Academic */
+.academic-content {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.subjects-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-left: 140px;
+}
+
+.subject-item {
+  background-color: #e3f2fd;
+  color: #0d47a1;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+/* Emergency */
+.emergency-content {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-width: 80%;
+}
+
+.contacts-grid {
+  display: flex;
+  flex-direction: column;
+  margin-left: 150px;
+}
+
+.contact-row {
+  margin-bottom: 10px;
+}
+
+.contact-phone {
+  font-weight: 500;
+}

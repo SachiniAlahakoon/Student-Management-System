@@ -1,0 +1,15 @@
+.empty-state-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 16px;
+  border: 1px dashed;
+  border-color: #e0e0e0;
+  background-color: #fafafa;
+  border-radius: 4px;
+}
+
+.empty-state-content {
+  margin-top: 8px;
+}
