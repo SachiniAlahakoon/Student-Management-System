@@ -9,14 +9,33 @@ export default function AddSubject() {
   const navigate = useNavigate();
 
   const [subjectName, setSubjectName] = useState("");
+  const [teacherNames, setTeacherNames] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const teacherNamesArray = teacherNames
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean);
+
     try {
-      await axios.post(`${API_BASE}/api/subjects`, {
+      // 1️⃣ Create subject
+      const res = await axios.post(`${API_BASE}/api/subjects`, {
         subject_name: subjectName,
       });
+
+      // 2️⃣ Assign teachers (optional but consistent)
+      if (teacherNamesArray.length > 0) {
+        await axios.put(
+          `${API_BASE}/api/subjects/${res.data.subject_id}/teacher`,
+          {
+            subject_name: subjectName,
+            teacher_names: teacherNamesArray,
+            class_id: 1, // adjust if needed
+          }
+        );
+      }
 
       toast.success("Subject added successfully 🎉");
 
@@ -43,6 +62,17 @@ export default function AddSubject() {
             onChange={(e) => setSubjectName(e.target.value)}
             required
           />
+        </div>
+
+        <div className="form-row">
+          <label>Teachers</label>
+          <input
+            type="text"
+            placeholder="e.g. Devindya, Chathuranga"
+            value={teacherNames}
+            onChange={(e) => setTeacherNames(e.target.value)}
+          />
+          
         </div>
 
         <div className="form-actions">

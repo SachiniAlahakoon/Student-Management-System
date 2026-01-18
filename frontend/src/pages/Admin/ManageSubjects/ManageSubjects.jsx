@@ -38,7 +38,7 @@ export default function ManageSubjects() {
     try {
       const res = await axios.get(`${API_BASE}/api/subjects`, {
         params: {
-          page: page + 1, // backend 1-based
+          page: page + 1,
           limit: rowsPerPage,
           search,
         },
@@ -70,25 +70,35 @@ export default function ManageSubjects() {
 
   // ================= EDIT =================
   const handleChange = (e) => {
-    setEditingSubject({
-      ...editingSubject,
+    setEditingSubject((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
   const updateSubject = async () => {
     try {
+      const teacherNamesArray = editingSubject.teacher_names
+        ? editingSubject.teacher_names
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean)
+        : [];
+
       await axios.put(
-        `${API_BASE}/api/subjects/${editingSubject.subject_id}`,
+        `${API_BASE}/api/subjects/${editingSubject.subject_id}/teacher`,
         {
           subject_name: editingSubject.subject_name,
+          teacher_names: teacherNamesArray,
+          class_id: editingSubject.class_id || 1, // adjust if needed
         }
       );
 
       toast.success("Subject updated successfully ✅");
       setEditingSubject(null);
       fetchSubjects();
-    } catch {
+    } catch (err) {
+      console.error(err);
       toast.error("Failed to update subject");
     }
   };
@@ -123,6 +133,7 @@ export default function ManageSubjects() {
             <TableRow>
               <TableCell>ID</TableCell>
               <TableCell>Subject Name</TableCell>
+              <TableCell>Teacher(s)</TableCell>
               <TableCell align="center">Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -133,11 +144,19 @@ export default function ManageSubjects() {
                 <TableRow key={s.subject_id}>
                   <TableCell>{s.subject_id}</TableCell>
                   <TableCell>{s.subject_name}</TableCell>
+                  <TableCell>
+                    {s.teacher_names || "Not assigned"}
+                  </TableCell>
                   <TableCell align="center">
                     <Tooltip title="Edit">
                       <IconButton
                         color="primary"
-                        onClick={() => setEditingSubject(s)}
+                        onClick={() =>
+                          setEditingSubject({
+                            ...s,
+                            teacher_names: s.teacher_names || "",
+                          })
+                        }
                       >
                         <EditIcon />
                       </IconButton>
@@ -156,7 +175,7 @@ export default function ManageSubjects() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={3} align="center">
+                <TableCell colSpan={4} align="center">
                   No records found
                 </TableCell>
               </TableRow>
@@ -188,6 +207,16 @@ export default function ManageSubjects() {
             <input
               name="subject_name"
               value={editingSubject.subject_name}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="form-row">
+            <label>Teachers</label>
+            <input
+              name="teacher_names"
+              placeholder="e.g. Devindya, Chathuranga"
+              value={editingSubject.teacher_names}
               onChange={handleChange}
             />
           </div>

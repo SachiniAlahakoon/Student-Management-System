@@ -3,11 +3,11 @@ const router = express.Router();
 const pool = require("../config/db");
 
 /**
- * GET SUBJECTS (search + pagination)
+ * GET SUBJECTS (search + pagination + teacher names)
  */
 router.get("/", async (req, res) => {
   try {
-    const page = parseInt(req.query.page, 10) || 1; // 1-based
+    const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 5;
     const search = req.query.search || "";
 
@@ -17,15 +17,15 @@ router.get("/", async (req, res) => {
     let params = [];
 
     if (search) {
-      whereClause = `WHERE subject_name LIKE ?`;
+      whereClause = `WHERE s.subject_name LIKE ?`;
       params.push(`%${search}%`);
     }
 
-    // ===== COUNT =====
+    // COUNT
     const [[countResult]] = await pool.query(
       `
-      SELECT COUNT(*) AS total
-      FROM subjects
+      SELECT COUNT(DISTINCT s.subject_id) AS total
+      FROM subjects s
       ${whereClause}
       `,
       params
@@ -33,15 +33,19 @@ router.get("/", async (req, res) => {
 
     const total = countResult.total;
 
-    // ===== DATA =====
+    // DATA
     const [rows] = await pool.query(
       `
       SELECT
-        subject_id,
-        subject_name
-      FROM subjects
+        s.subject_id,
+        s.subject_name,
+        GROUP_CONCAT(DISTINCT t.teacher_name SEPARATOR ', ') AS teacher_names
+      FROM subjects s
+      LEFT JOIN teacher_subjects ts ON ts.subject_id = s.subject_id
+      LEFT JOIN teachers t ON t.teacher_id = ts.teacher_id
       ${whereClause}
-      ORDER BY subject_id ASC
+      GROUP BY s.subject_id
+      ORDER BY s.subject_id ASC
       LIMIT ? OFFSET ?
       `,
       [...params, limit, offset]
@@ -55,6 +59,7 @@ router.get("/", async (req, res) => {
       totalPages: Math.ceil(total / limit),
     });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: err.message });
   }
 });
@@ -70,41 +75,95 @@ router.post("/", async (req, res) => {
   }
 
   try {
-    await pool.query(
+    const [result] = await pool.query(
       `INSERT INTO subjects (subject_name) VALUES (?)`,
       [subject_name]
     );
 
-    res.status(201).json({ message: "Subject added successfully" });
+    res.status(201).json({
+      message: "Subject added successfully",
+      subject_id: result.insertId,
+    });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: err.message });
   }
 });
 
+
 /**
- * UPDATE SUBJECT
+ * UPDATE SUBJECT + TEACHERS (FREE-TEXT)
+ * Expected body:
+ * {
+ *   subject_name: "Economics",
+ *   teacher_names: ["Devindya", "Chathuranga"],
+ *   class_id: 1
+ * }
  */
-router.put("/:subject_id", async (req, res) => {
+router.put("/:subject_id/teacher", async (req, res) => {
   const { subject_id } = req.params;
-  const { subject_name } = req.body;
+  const { subject_name, teacher_names, class_id } = req.body;
+
+  if (!subject_name || !Array.isArray(teacher_names)) {
+    return res.status(400).json({
+      message: "subject_name and teacher_names[] are required",
+    });
+  }
+
+  const conn = await pool.getConnection();
 
   try {
-    const [result] = await pool.query(
-      `
-      UPDATE subjects
-      SET subject_name = ?
-      WHERE subject_id = ?
-      `,
+    await conn.beginTransaction();
+
+    // 1️⃣ Update subject name
+    const [subjectResult] = await conn.query(
+      `UPDATE subjects SET subject_name = ? WHERE subject_id = ?`,
       [subject_name, subject_id]
     );
 
-    if (result.affectedRows === 0) {
+    if (subjectResult.affectedRows === 0) {
+      await conn.rollback();
       return res.status(404).json({ message: "Subject not found" });
     }
 
-    res.json({ message: "Subject updated successfully" });
+    // 2️⃣ Remove old teacher mappings
+    await conn.query(
+      `DELETE FROM teacher_subjects WHERE subject_id = ?`,
+      [subject_id]
+    );
+
+    // 3️⃣ Insert new mappings using teacher names
+    for (const name of teacher_names) {
+      const [[teacher]] = await conn.query(
+        `SELECT teacher_id FROM teachers WHERE teacher_name = ?`,
+        [name]
+      );
+
+      if (!teacher) {
+        await conn.rollback();
+        return res.status(400).json({
+          message: `Teacher not found: ${name}`,
+        });
+      }
+
+      await conn.query(
+        `
+        INSERT INTO teacher_subjects (teacher_id, subject_id, class_id)
+        VALUES (?, ?, ?)
+        `,
+        [teacher.teacher_id, subject_id, class_id || 1]
+      );
+    }
+
+    await conn.commit();
+
+    res.json({ message: "Subject and teachers updated successfully" });
   } catch (err) {
+    await conn.rollback();
+    console.error(err);
     res.status(500).json({ message: err.message });
+  } finally {
+    conn.release();
   }
 });
 
@@ -114,7 +173,7 @@ router.put("/:subject_id", async (req, res) => {
 router.delete("/:subject_id", async (req, res) => {
   try {
     const [result] = await pool.query(
-      "DELETE FROM subjects WHERE subject_id = ?",
+      `DELETE FROM subjects WHERE subject_id = ?`,
       [req.params.subject_id]
     );
 
