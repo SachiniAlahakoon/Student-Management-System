@@ -5,8 +5,8 @@ import axios from "axios";
 import "./Login.css";
 
 export default function Login() {
-  const [username, setUsername] = useState(null);
-  const [password, setPassword] = useState(null);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [err, setErr] = useState(null);
   const navigate = useNavigate();
 
@@ -20,28 +20,25 @@ export default function Login() {
         password,
       });
 
-      const data = res.data;
+      const { token, user } = res.data;
 
-      localStorage.setItem("token", data.token);
+      // Save JWT + user info
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("role", user.role);
 
-      const role = data.user.role;
-
-      if (role === "admin") {
+      // Redirect based on role
+      if (user.role === "admin") {
         navigate("/dashboard/admin");
-      } else if (role === "student") {
-        navigate("/dashboard/student");
-      } else if (role === "teacher") {
-        navigate("/dashboard/teacher");
+      } else if (user.role === "student") {
+        navigate("/dashboard/student/s-profile");
+      } else if (user.role === "teacher") {
+        navigate("/dashboard/teacher/t-profile");
       } else {
         setErr("Unknown user role");
       }
     } catch (error) {
-      // Axios error handling
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
+      if (error.response && error.response.data && error.response.data.message) {
         setErr(error.response.data.message);
       } else {
         setErr("Login failed");
@@ -53,7 +50,7 @@ export default function Login() {
     <div className="login-root">
       <div className="left-pane">
         <img
-          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6RebpMnWu7Hi2RSCr8JCtpj0HvcT3Lxb4FQ&s"
+          src="/logo.png"
           alt="school"
           className="left-image"
         />
@@ -80,10 +77,8 @@ export default function Login() {
             required
           />
 
-          <div className="row">
-            <a className="forgot" href="/forgot">
-              Forgot Password?
-            </a>
+          <div className="abc">
+         
             <button className="btn-login" type="submit">
               Login
             </button>
@@ -95,3 +90,5 @@ export default function Login() {
     </div>
   );
 }
+
+

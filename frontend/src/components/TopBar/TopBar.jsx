@@ -1,30 +1,48 @@
 import { Link } from "react-router-dom";
-import './TopBar.css';
-import logo from '../../assets/images/Swarnamali GCK Logo.png';
-import userIcon from '../../assets/images/user.png';
-import sortDownLogo from '../../assets/images/sort-down.png';
-import SettingsIcon from '@mui/icons-material/Settings';
+import "./TopBar.css";
+import logo from "../../assets/images/Swarnamali GCK Logo.png";
+import userIcon from "../../assets/images/user.png";
+import UserInfoCard from "../UserInfoCard/UserInfoCard";
 
 function TopBar() {
+  // Get logged-in user info from localStorage (set during login)
+  const user = JSON.parse(localStorage.getItem("user")) || {};
+  const username = user.username || "User";
+  const role = user.role || "student";
+
+  // Generate dashboard link dynamically based on role
+  const dashboardLink =
+    role === "admin"
+      ? "/dashboard/admin"
+      : role === "teacher"
+      ? "/dashboard/teacher/t-profile"
+      :role === "student"
+       "/dashboard/student/s-profile";
+
   return (
     <nav className="top-bar">
-        <div className="logo-area">
-            <img src={ logo } alt="" className="logo" />
-            <Link to="/student/exam-results" className="title">Swarnamali Girls College</Link>
+      {/* Logo and school title */}
+      <div className="logo-area">
+        <img src={logo} alt="logo" className="logo" />
+        <Link to={dashboardLink} className="title">
+          Swarnamali Girls College
+        </Link>
+      </div>
+
+      {/* Right section with user info */}
+      <div className="right-section">
+        <div className="user-info">
+          <img src={userIcon} alt="user" className="user-icon" />
+          <div className="user-details">
+            <span className="user-name">{username}</span>
+            <span className="user-role">
+              {role.charAt(0).toUpperCase() + role.slice(1)}
+            </span>
+          </div>
         </div>
-        <div className="right-section">
-            <div className="user-info">
-                <img src={ userIcon } alt="" className="user-icon" />
-                <div className="user-details">
-                    <span className="user-name">N.M. Perera</span>
-                    <span className="user-role">Student</span>
-                </div>
-                <img src={ sortDownLogo } alt="" className="sort-down-icon" />
-            </div>
-            <SettingsIcon className="settings-icon" />
-        </div>
+      </div>
     </nav>
-  )
+  );
 }
 
-export default TopBar
+export default TopBar;

@@ -1,0 +1,34 @@
+.contentArea {
+  padding: 20px;
+  margin-top: 7vh;
+}
+
+.mainHeading {
+  margin-bottom: 10px;
+}
+
+.mainHeading-att {
+  margin: 0;
+}
+
+.bulk-actions {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 30px;
+  align-items: center;
+}
+
+.results-table th,
+.results-table td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.results-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.table-body {
+  min-height: 150px; /* ensures empty table still has height */
+}
