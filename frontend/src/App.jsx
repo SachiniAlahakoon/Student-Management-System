@@ -8,7 +8,7 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 import SplashScreen from "./pages/SplashScreen/SplashScreen";
 import ExamResults from "./pages/ExamResults/ExamResults";
 import StProfile from "./pages/StProfile/StProfile";
-import TeProfile from "./pages/TeProfile/TeProfile";
+import TeProfile from "./pages/TeProfile/TeProfiles";
 import MarksManagement from "./pages/MarksManagement/MarksManagement";
 import AttendanceView from "./pages/AttendanceView/AttendanceView";
 import Attendance from "./pages/Attendance/Attendance";
@@ -25,6 +25,7 @@ import ManageTeachers from "./pages/Admin/ManageTeachers/ManageTeachers";
 import AddTeacher from "./pages/Admin/AddTeacher/AddTeacher";
 import ManageSubjects from "./pages/Admin/ManageSubjects/ManageSubjects";
 import AddSubject from "./pages/Admin/AddSubject/AddSubject";
+import Settings from "./pages/Settings/Settings";
 
 export default function App() {
   return (
@@ -55,6 +56,7 @@ export default function App() {
           <Route path="s-profile" element={<StProfile />} />
           <Route path="exam-results" element={<ExamResults />} />
           <Route path="attendance" element={<AttendanceView />} />
+          <Route path="settings" element={<Settings />} /> 
         </Route>
 
         <Route
@@ -70,6 +72,7 @@ export default function App() {
           <Route path="t-profile" element={<TeProfile />} />
           <Route path="attendance-manage" element={<Attendance />} />
           <Route path="marks-manage" element={<MarksManagement />} />
+          <Route path="settings" element={<Settings />} /> 
         </Route>
          <Route
           path="/dashboard/admin"
@@ -91,7 +94,7 @@ export default function App() {
             <Route path="add-teacher" element={<AddTeacher />} />
             <Route path="manage-subjects" element={<ManageSubjects />} />
             <Route path="add-subject" element={<AddSubject />} />
-        
+            <Route path="settings" element={<Settings />} />
         </Route>
       </Routes>
       

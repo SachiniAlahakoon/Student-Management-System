@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import PersonIcon from "@mui/icons-material/Person";
 import GroupsIcon from "@mui/icons-material/Groups";
 import BadgeIcon from "@mui/icons-material/Badge";
+import "./TeProfiles";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import WorkspacePremiumSharpIcon from "@mui/icons-material/WorkspacePremiumSharp";
 import EmailIcon from "@mui/icons-material/Email";
@@ -12,7 +13,7 @@ import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 import moment from "moment";
 
 import { API_BASE } from "../../api/config";
-import "./TeProfile.css";
+
 
 function TeProfile() {
   const [teacher, setTeacher] = useState(null);

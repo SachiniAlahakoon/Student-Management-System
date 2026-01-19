@@ -3,6 +3,8 @@ import BarChartIcon from "@mui/icons-material/BarChart";
 import GroupsIcon from "@mui/icons-material/Groups";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts"
 import MenuBookIcon from "@mui/icons-material/MenuBook"
+import SettingsIcon from "@mui/icons-material/Settings";
+
 
 export const SideBarData = {
   student: [
@@ -21,6 +23,7 @@ export const SideBarData = {
       icon: <GroupsIcon />,
       link: "/dashboard/student/attendance",
     },
+     
   ],
 
   teacher: [
@@ -39,6 +42,7 @@ export const SideBarData = {
       icon: <BarChartIcon />,
       link: "/dashboard/teacher/marks-manage",
     },
+    
   ],
 
   admin: [
@@ -62,5 +66,6 @@ export const SideBarData = {
     icon: <MenuBookIcon />,
     link: "/dashboard/admin/manage-subjects",
   },
+     
    ],
 };

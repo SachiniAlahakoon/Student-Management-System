@@ -42,14 +42,20 @@ function SideBar() {
       </div>
 
       <div className="side-bar-bottom">
-        <li className="settings">
-          <div className="settings-item">
-            <div id="icon">
-              <SettingsIcon />
-            </div>
-            <div id="title">Settings</div>
-          </div>
-        </li>
+     <li
+  className="settings"
+  onClick={() => {
+    const role = localStorage.getItem("role")?.toLowerCase();
+    navigate(`/dashboard/${role}/settings`);
+  }}
+>
+  <div className="settings-item">
+    <div id="icon">
+      <SettingsIcon />
+    </div>
+    <div id="title">Settings</div>
+  </div>
+</li>
 
         <li className="logout" onClick={logout}>
           <div className="logout-item">
