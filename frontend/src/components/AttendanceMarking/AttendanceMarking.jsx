@@ -21,7 +21,7 @@ const AttendanceMarking = () => {
     checkAttendanceStatus();
   }, [activeClassId, classLoading]);
 
-  // ---------------- FETCH STUDENTS ----------------
+  // Fetch students
   const loadStudents = async () => {
     try {
       setLoading(true);
@@ -47,7 +47,7 @@ const AttendanceMarking = () => {
     }
   };
 
-  // ---------------- CHECK TODAY ATTENDANCE ----------------
+  // Check student attendance 
   const checkAttendanceStatus = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -66,7 +66,7 @@ const AttendanceMarking = () => {
     }
   };
 
-  // ---------------- TOAST QUEUE ----------------
+  // Toast queue
   const enqueueToast = ({ type, message }) => {
     setNotificationQueue((prev) => [...prev, { type, message }]);
   };
@@ -94,7 +94,7 @@ const AttendanceMarking = () => {
     }
   }, [notificationQueue]);
 
-  // ---------------- SELECTION ----------------
+  // Selection
   const toggleStudent = (id) => {
     const copy = new Set(selectedStudents);
     copy.has(id) ? copy.delete(id) : copy.add(id);
@@ -109,7 +109,7 @@ const AttendanceMarking = () => {
     }
   };
 
-  // ---------------- BULK ACTIONS ----------------
+  // Bulk actions
   const markSelected = () => {
     if (selectedStudents.size === 0) {
       enqueueToast({ type: "warning", message: "No students selected" });
@@ -135,7 +135,7 @@ const AttendanceMarking = () => {
     setSelectedStudents(new Set());
   };
 
-  // ---------------- SUBMIT ----------------
+  //Submit attendance
   const submitAttendance = async () => {
     if (attendanceMarked) {
       enqueueToast({ type: "warning", message: "Attendance already submitted today" });
@@ -175,7 +175,7 @@ const AttendanceMarking = () => {
     }
   };
 
-  // ---------------- COUNTS ----------------
+  // Generate count
   const present = students.filter((s) => s.status === "Present").length;
   const absent = students.filter((s) => s.status === "Absent").length;
   const late = students.filter((s) => s.status === "Late").length;

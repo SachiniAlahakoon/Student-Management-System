@@ -20,19 +20,19 @@ export default function AddSubject() {
       .filter(Boolean);
 
     try {
-      // 1️⃣ Create subject
+      // Create subject
       const res = await axios.post(`${API_BASE}/api/subjects`, {
         subject_name: subjectName,
       });
 
-      // 2️⃣ Assign teachers (optional but consistent)
+      // Assign teachers to subject
       if (teacherNamesArray.length > 0) {
         await axios.put(
           `${API_BASE}/api/subjects/${res.data.subject_id}/teacher`,
           {
             subject_name: subjectName,
             teacher_names: teacherNamesArray,
-            class_id: 1, // adjust if needed
+            class_id: 1, 
           }
         );
       }

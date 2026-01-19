@@ -116,7 +116,7 @@ export default function ManageAdmin() {
         </button>
       </div>
 
-      {/* TABLE */}
+      {/* Table */}
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -188,7 +188,7 @@ export default function ManageAdmin() {
         />
       </TableContainer>
 
-      {/* EDIT FORM */}
+      {/* Form for editing */}
       {editingId && (
         <form onSubmit={submit} className="admin-card">
           <h3>Edit Admin</h3>

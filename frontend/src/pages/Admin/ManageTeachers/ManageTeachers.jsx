@@ -32,7 +32,7 @@ export default function ManageTeachers() {
 
   const [editingTeacher, setEditingTeacher] = useState(null);
 
-  // ================= FETCH TEACHERS =================
+  // Fetch teachers
   const fetchTeachers = async () => {
     try {
       const res = await axios.get(`${API_BASE}/api/teachers`, {
@@ -54,7 +54,7 @@ export default function ManageTeachers() {
     fetchTeachers();
   }, [page, search]);
 
-  // ================= DELETE =================
+  // Delete teacher
   const deleteTeacher = async (teacher_id) => {
     if (!window.confirm("Delete this teacher?")) return;
 
@@ -67,7 +67,7 @@ export default function ManageTeachers() {
     }
   };
 
-  // ================= EDIT =================
+  // Edit teacher
   const handleChange = (e) => {
     setEditingTeacher({
       ...editingTeacher,
@@ -100,7 +100,7 @@ export default function ManageTeachers() {
     <div className="content">
       <h2>Manage Teachers</h2>
 
-      {/* ================= TOP BAR ================= */}
+      {/* Top bar */}
       <div className="teachers-top-bar">
         <TextField
           size="small"
@@ -120,7 +120,7 @@ export default function ManageTeachers() {
         </Button>
       </div>
 
-      {/* ================= TABLE ================= */}
+      {/* Table */}
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -186,7 +186,7 @@ export default function ManageTeachers() {
         />
       </TableContainer>
 
-      {/* ================= EDIT FORM ================= */}
+      {/* Editing form */}
       {editingTeacher && (
         <div className="edit-form-card">
           <h3>Edit Teacher</h3>

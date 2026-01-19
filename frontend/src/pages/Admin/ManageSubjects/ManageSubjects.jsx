@@ -33,7 +33,7 @@ export default function ManageSubjects() {
 
   const [editingSubject, setEditingSubject] = useState(null);
 
-  // ================= FETCH SUBJECTS =================
+  // Fetch subjects
   const fetchSubjects = async () => {
     try {
       const res = await axios.get(`${API_BASE}/api/subjects`, {
@@ -55,7 +55,7 @@ export default function ManageSubjects() {
     fetchSubjects();
   }, [page, rowsPerPage, search]);
 
-  // ================= DELETE =================
+  // Delete subject
   const deleteSubject = async (subject_id) => {
     if (!window.confirm("Delete this subject?")) return;
 
@@ -68,7 +68,7 @@ export default function ManageSubjects() {
     }
   };
 
-  // ================= EDIT =================
+  // Edit subject
   const handleChange = (e) => {
     setEditingSubject((prev) => ({
       ...prev,
@@ -107,7 +107,7 @@ export default function ManageSubjects() {
     <div className="content">
       <h2>Manage Subjects</h2>
 
-      {/* TOP BAR */}
+      {/* Top bar */}
       <div className="subjects-top-bar">
         <TextField
           size="small"
@@ -126,7 +126,7 @@ export default function ManageSubjects() {
         </Button>
       </div>
 
-      {/* TABLE */}
+      {/* Table */}
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -197,7 +197,7 @@ export default function ManageSubjects() {
         />
       </TableContainer>
 
-      {/* EDIT FORM */}
+      {/* Form for editing */}
       {editingSubject && (
         <div className="edit-form-card">
           <h3>Edit Subject</h3>

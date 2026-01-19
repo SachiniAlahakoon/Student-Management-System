@@ -76,7 +76,7 @@ export default function AttendanceView() {
     fetchYears();
   }, []);
 
-  /* ===== Month → Week calculation (moment version) ===== */
+  /* Month → Week calculation (moment version) */
   useEffect(() => {
     if (!selectedYear || !selectedMonth) return;
 

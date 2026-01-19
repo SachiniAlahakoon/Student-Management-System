@@ -2,9 +2,7 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../config/db");
 
-/**
- * GET SUBJECTS (search + pagination + teacher names)
- */
+
 router.get("/", async (req, res) => {
   try {
     const page = parseInt(req.query.page, 10) || 1;
@@ -21,7 +19,7 @@ router.get("/", async (req, res) => {
       params.push(`%${search}%`);
     }
 
-    // COUNT
+  
     const [[countResult]] = await pool.query(
       `
       SELECT COUNT(DISTINCT s.subject_id) AS total
@@ -33,7 +31,7 @@ router.get("/", async (req, res) => {
 
     const total = countResult.total;
 
-    // DATA
+   
     const [rows] = await pool.query(
       `
       SELECT
@@ -64,9 +62,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-/**
- * ADD SUBJECT
- */
+
 router.post("/", async (req, res) => {
   const { subject_name } = req.body;
 
@@ -91,15 +87,7 @@ router.post("/", async (req, res) => {
 });
 
 
-/**
- * UPDATE SUBJECT + TEACHERS (FREE-TEXT)
- * Expected body:
- * {
- *   subject_name: "Economics",
- *   teacher_names: ["Devindya", "Chathuranga"],
- *   class_id: 1
- * }
- */
+
 router.put("/:subject_id/teacher", async (req, res) => {
   const { subject_id } = req.params;
   const { subject_name, teacher_names, class_id } = req.body;
@@ -115,7 +103,6 @@ router.put("/:subject_id/teacher", async (req, res) => {
   try {
     await conn.beginTransaction();
 
-    // 1️⃣ Update subject name
     const [subjectResult] = await conn.query(
       `UPDATE subjects SET subject_name = ? WHERE subject_id = ?`,
       [subject_name, subject_id]
@@ -126,13 +113,12 @@ router.put("/:subject_id/teacher", async (req, res) => {
       return res.status(404).json({ message: "Subject not found" });
     }
 
-    // 2️⃣ Remove old teacher mappings
     await conn.query(
       `DELETE FROM teacher_subjects WHERE subject_id = ?`,
       [subject_id]
     );
 
-    // 3️⃣ Insert new mappings using teacher names
+  
     for (const name of teacher_names) {
       const [[teacher]] = await conn.query(
         `SELECT teacher_id FROM teachers WHERE teacher_name = ?`,
@@ -167,9 +153,7 @@ router.put("/:subject_id/teacher", async (req, res) => {
   }
 });
 
-/**
- * DELETE SUBJECT
- */
+
 router.delete("/:subject_id", async (req, res) => {
   try {
     const [result] = await pool.query(

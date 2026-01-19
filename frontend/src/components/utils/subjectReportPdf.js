@@ -6,18 +6,18 @@ export const generateSubjectReportPdf = (reportData) => {
 
   const doc = new jsPDF();
 
-  /* ---------------- Title ---------------- */
+  // Title
   doc.setFontSize(16);
   doc.text("Subject Performance Report", 14, 20);
 
-  /* ---------------- Meta ---------------- */
+  // Meta information
   doc.setFontSize(11);
   doc.text(`Class: ${meta.class}`, 14, 30);
   doc.text(`Subject: ${meta.subject}`, 14, 36);
   doc.text(`Term: ${meta.term}`, 14, 42);
   doc.text(`Year: ${meta.year}`, 14, 48);
 
-  /* ---------------- Statistics ---------------- */
+  // Statistics 
   doc.setFontSize(13);
   doc.text("Summary Statistics", 14, 60);
 
@@ -32,7 +32,7 @@ export const generateSubjectReportPdf = (reportData) => {
   doc.text(`Pass Rate: ${stats.passRate}%`, 14, statsY + 30);
   doc.text(`Average Marks: ${stats.average}`, 14, statsY + 36);
 
-  /* ---------------- Students Table ---------------- */
+  // Students table
   autoTable(doc, {
     startY: statsY + 45,
     head: [["Reg No", "Student Name", "Marks", "Grade", "Rank"]],
@@ -51,7 +51,7 @@ export const generateSubjectReportPdf = (reportData) => {
     },
   });
 
-  /* ---------------- Save ---------------- */
+  // Save 
   doc.save(
     `Subject_Report_${meta.class}_${meta.subject}_${meta.year}_${meta.term}.pdf`
   );

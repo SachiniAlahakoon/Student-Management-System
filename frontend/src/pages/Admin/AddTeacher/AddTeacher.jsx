@@ -9,7 +9,7 @@ export default function AddTeacher() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    // login details
+    // details for login
     username: "",
     email: "",
     password: "",
@@ -21,7 +21,7 @@ export default function AddTeacher() {
     phone: "",
   });
 
-  // HANDLE INPUT CHANGE
+  // Change handler for form inputs
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -29,12 +29,12 @@ export default function AddTeacher() {
     });
   };
 
-  // SUBMIT FORM
+  // Submit form handler
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      // ================= 1. CREATE USER =================
+      // Create user
       const userRes = await axios.post(`${API_BASE}/api/users`, {
         username: formData.username,
         email: formData.email,
@@ -44,7 +44,7 @@ export default function AddTeacher() {
 
       const user_id = userRes.data.user_id;
 
-      // ================= 2. CREATE TEACHER =================
+      // Create teacher
       await axios.post(`${API_BASE}/api/teachers`, {
         id_no: formData.id_no,
         teacher_name: formData.teacher_name,
@@ -72,7 +72,7 @@ export default function AddTeacher() {
       <h2>Add New Teacher</h2>
 
       <form className="teacher-form" onSubmit={handleSubmit}>
-        {/* LOGIN DETAILS */}
+        {/* Details for login */}
         <div className="form-row">
           <label>Username</label>
           <input
@@ -107,7 +107,7 @@ export default function AddTeacher() {
 
         <hr />
 
-        {/* TEACHER DETAILS */}
+        {/* Details of teacher */}
         <div className="form-row">
           <label>ID No</label>
           <input

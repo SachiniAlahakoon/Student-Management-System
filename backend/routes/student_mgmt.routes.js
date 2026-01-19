@@ -2,9 +2,7 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../config/db");
 
-/**
- * GET STUDENTS (search + pagination)
- */
+
 router.get("/", async (req, res) => {
   try {
     const page = parseInt(req.query.page, 10) || 1; // 1-based
@@ -29,7 +27,7 @@ router.get("/", async (req, res) => {
       params.push(keyword, keyword, keyword, keyword, keyword);
     }
 
-    // ===== COUNT =====
+    
     const [[countResult]] = await pool.query(
       `
       SELECT COUNT(*) AS total
@@ -43,7 +41,7 @@ router.get("/", async (req, res) => {
 
     const total = countResult.total;
 
-    // ===== DATA =====
+    
     const [rows] = await pool.query(
       `
       SELECT
@@ -87,9 +85,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-/**
- * GET SINGLE STUDENT BY REG NO
- */
+
 router.get("/:reg_no", async (req, res) => {
   const { reg_no } = req.params;
 
@@ -131,10 +127,7 @@ router.get("/:reg_no", async (req, res) => {
   }
 });
 
-/**
- * ADD STUDENT
- * user_id and class_id must exist
- */
+
 router.post("/", async (req, res) => {
   const {
     reg_no,
@@ -184,9 +177,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-/**
- * UPDATE STUDENT BY REG NO
- */
+
 router.put("/:reg_no", async (req, res) => {
   const { reg_no } = req.params;
 
@@ -244,9 +235,7 @@ router.put("/:reg_no", async (req, res) => {
   }
 });
 
-/**
- * DELETE STUDENT BY REG NO
- */
+
 router.delete("/:reg_no", async (req, res) => {
   try {
     await pool.query(

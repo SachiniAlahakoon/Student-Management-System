@@ -28,7 +28,7 @@ export default function AddAdmin() {
     e.preventDefault();
 
     try {
-      // ================= 1. CREATE USER =================
+      // Create user
       const userRes = await axios.post(`${API_BASE}/api/users`, {
         username: formData.username,
         email: formData.email,
@@ -38,7 +38,7 @@ export default function AddAdmin() {
 
       const user_id = userRes.data.user_id;
 
-      // ================= 2. CREATE ADMIN =================
+      //  Create admin
       await axios.post(`${API_BASE}/api/admins`, {
         NIC: formData.NIC,
         name: formData.name,
@@ -98,7 +98,7 @@ export default function AddAdmin() {
 
         <hr />
 
-        {/* ADMIN DETAILS */}
+        {/* Details of admin */}
         <div className="form-row">
           <label>NIC</label>
           <input

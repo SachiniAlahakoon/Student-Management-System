@@ -19,7 +19,7 @@ export const TeacherClassProvider = ({ children }) => {
 
         setClasses(res.data);
 
-        // Auto-select first class
+        // Select first class automatically
         if (res.data.length > 0) {
           setActiveClassId(res.data[0].class_id);
         }

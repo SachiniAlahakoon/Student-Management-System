@@ -1,8 +1,6 @@
 const pool = require("../config/db");
 
-/**
- * GET ADMINS (search + pagination)
- */
+//get admins with pagination and search
 exports.getAdmins = async (req, res) => {
   try {
     const page = parseInt(req.query.page, 10);
@@ -26,9 +24,7 @@ exports.getAdmins = async (req, res) => {
       params.push(keyword, keyword, keyword, keyword, keyword);
     }
 
-    // ===============================
-    // PAGINATED
-    // ===============================
+    
     if (hasPagination) {
       const offset = (page - 1) * limit;
 
@@ -68,9 +64,7 @@ exports.getAdmins = async (req, res) => {
       });
     }
 
-    // ===============================
-    // NO PAGINATION
-    // ===============================
+    
     const [rows] = await pool.query(
       `
       SELECT
@@ -97,10 +91,7 @@ exports.getAdmins = async (req, res) => {
   }
 };
 
-/**
- * CREATE ADMIN
- * user_id must exist in users table
- */
+//Create admin
 exports.createAdmin = async (req, res) => {
   const { NIC, name, phone, user_id } = req.body;
 
@@ -124,9 +115,7 @@ exports.createAdmin = async (req, res) => {
   }
 };
 
-/**
- * UPDATE ADMIN
- */
+// Update admin
 exports.updateAdmin = async (req, res) => {
   const { admin_id } = req.params;
   const { NIC, name, phone } = req.body;
@@ -152,10 +141,7 @@ exports.updateAdmin = async (req, res) => {
   }
 };
 
-/**
- * DELETE ADMIN
- * (does not delete user automatically)
- */
+// Delete admin
 exports.deleteAdmin = async (req, res) => {
   const { admin_id } = req.params;
 

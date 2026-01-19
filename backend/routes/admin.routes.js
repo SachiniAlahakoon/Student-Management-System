@@ -2,9 +2,7 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../config/db");
 
-/**
- * GET ADMINS (with search + pagination)
- */
+
 router.get("/", async (req, res) => {
   try {
     const page = parseInt(req.query.page, 10);
@@ -28,9 +26,7 @@ router.get("/", async (req, res) => {
       params.push(keyword, keyword, keyword, keyword, keyword);
     }
 
-    // ===============================
-    // PAGINATED RESPONSE
-    // ===============================
+   
     if (hasPagination) {
       const offset = (page - 1) * limit;
 
@@ -69,9 +65,7 @@ router.get("/", async (req, res) => {
       });
     }
 
-    // ===============================
-    // NO PAGINATION
-    // ===============================
+    
     const [rows] = await pool.query(
       `
       SELECT 
@@ -97,10 +91,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-/**
- * ADD ADMIN
- * user_id MUST already exist in users table
- */
+
 router.post("/", async (req, res) => {
   const { NIC, name, phone, user_id } = req.body;
 
@@ -120,9 +111,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-/**
- * UPDATE ADMIN
- */
+
 router.put("/:admin_id", async (req, res) => {
   const { NIC, name, phone } = req.body;
 
@@ -142,10 +131,7 @@ router.put("/:admin_id", async (req, res) => {
   }
 });
 
-/**
- * DELETE ADMIN
- * (User is NOT deleted automatically)
- */
+
 router.delete("/:admin_id", async (req, res) => {
   try {
     await pool.query(

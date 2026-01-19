@@ -2,9 +2,7 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../config/db");
 
-/**
- * GET TEACHERS (search + pagination)
- */
+
 router.get("/", async (req, res) => {
   try {
     const page = parseInt(req.query.page, 10) || 1;
@@ -28,7 +26,7 @@ router.get("/", async (req, res) => {
       params.push(keyword, keyword, keyword, keyword);
     }
 
-    // COUNT
+    
     const [[countResult]] = await pool.query(
       `
       SELECT COUNT(*) AS total
@@ -42,7 +40,7 @@ router.get("/", async (req, res) => {
 
     const total = countResult.total;
 
-    // DATA
+    
     const [rows] = await pool.query(
       `
       SELECT
@@ -80,9 +78,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-/**
- * GET SINGLE TEACHER
- */
+
 router.get("/:teacher_id", async (req, res) => {
   const { teacher_id } = req.params;
 
@@ -117,10 +113,7 @@ router.get("/:teacher_id", async (req, res) => {
   res.json(teacher);
 });
 
-/**
- * ADD TEACHER
- * user_id must already exist
- */
+
 router.post("/", async (req, res) => {
   const { id_no, teacher_name, birthday, phone, email, user_id } = req.body;
 
@@ -144,9 +137,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-/**
- * UPDATE TEACHER
- */
+
 router.put("/:teacher_id", async (req, res) => {
   const { teacher_id } = req.params;
   const { id_no, teacher_name, birthday, phone, email } = req.body;
@@ -167,10 +158,7 @@ router.put("/:teacher_id", async (req, res) => {
   }
 });
 
-/**
- * DELETE TEACHER
- * (does NOT delete user automatically)
- */
+
 router.delete("/:teacher_id", async (req, res) => {
   try {
     await pool.query(

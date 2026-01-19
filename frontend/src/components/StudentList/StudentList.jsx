@@ -16,7 +16,7 @@ const StudentList = () => {
     fetchStudents();
   }, [activeClassId, classLoading]);
 
-  // ---------------- TOAST QUEUE ----------------
+  // Toast queue
   const enqueueToast = ({ type, message }) => {
     setNotificationQueue((prev) => [...prev, { type, message }]);
   };
@@ -44,7 +44,7 @@ const StudentList = () => {
     }
   }, [notificationQueue]);
 
-  // ---------------- FETCH STUDENTS ----------------
+  // Fetch students
   const fetchStudents = async () => {
     try {
       setLoading(true);

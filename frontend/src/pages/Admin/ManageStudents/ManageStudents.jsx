@@ -32,12 +32,12 @@ export default function ManageStudents() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [totalRows, setTotalRows] = useState(0);
 
-  // ================= FETCH =================
+  // Fetch student data
   const fetchStudents = async () => {
     try {
       const res = await axios.get(`${API_BASE}/api/students`, {
         params: {
-          page: page + 1, // backend is 1-based
+          page: page + 1, 
           limit: rowsPerPage,
           search,
         },
@@ -55,7 +55,7 @@ export default function ManageStudents() {
     fetchStudents();
   }, [page, rowsPerPage, search]);
 
-  // ================= UPDATE =================
+  // Update student handlers
   const handleChange = (e) => {
     setEditingStudent({
       ...editingStudent,
@@ -94,7 +94,7 @@ export default function ManageStudents() {
 };
 
 
-  // ================= DELETE =================
+  // Delete 
   const deleteStudent = async (reg_no) => {
     if (!window.confirm("Delete this student?")) return;
 
@@ -127,7 +127,7 @@ export default function ManageStudents() {
         </button>
       </div>
 
-      {/* TABLE */}
+      {/* Table */}
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -208,7 +208,7 @@ export default function ManageStudents() {
         />
       </TableContainer>
 
-      {/* EDIT FORM */}
+      {/* Form for editing */}
       {editingStudent && (
         <div className="edit-form-card">
           <h3>Edit Student</h3>

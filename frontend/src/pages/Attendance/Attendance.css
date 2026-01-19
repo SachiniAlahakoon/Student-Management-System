@@ -1,7 +1,6 @@
 .pageTitle {
   font-weight: bold;
   margin-top: -30px;
-  /*margin-bottom: 10px;*/
 }
 
 .classSelect {
@@ -884,7 +883,7 @@
   background: #f2f2f2;
 }
 
-/* ───────── TABLE ───────── */
+/* TABLE  */
 
 .attendance-table {
   width: 100%;
@@ -910,7 +909,7 @@
   padding: 3px 6px;
 }
 
-/* ───────── FOOTER ───────── */
+/* FOOTER */
 
 .attendance-footer {
   display: flex;

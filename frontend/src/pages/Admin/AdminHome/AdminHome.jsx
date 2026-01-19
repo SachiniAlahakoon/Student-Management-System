@@ -28,7 +28,6 @@ export default function AdminHome() {
          <Grid item xs={12} md={4}>
           <Card
             className="dashboard-card"
-            //onClick={() => navigate("/dashboard/admin/students")}
           >
             <CardContent>
               <AdminPanelSettingsIcon className="dashboard-icon" />
@@ -40,7 +39,6 @@ export default function AdminHome() {
         <Grid item xs={12} md={4}>
           <Card
             className="dashboard-card"
-            //onClick={() => navigate("/dashboard/admin/students")}
           >
             <CardContent>
               <PeopleIcon className="dashboard-icon" />
@@ -53,7 +51,6 @@ export default function AdminHome() {
         <Grid item xs={12} md={4}>
           <Card
             className="dashboard-card"
-            //onClick={() => navigate("/dashboard/admin/teachers")}
           >
             <CardContent>
               <SchoolIcon className="dashboard-icon" />
@@ -66,7 +63,6 @@ export default function AdminHome() {
         <Grid item xs={12} md={4}>
           <Card
             className="dashboard-card"
-            //onClick={() => navigate("/dashboard/admin/subjects")}
           >
             <CardContent>
               <MenuBookIcon className="dashboard-icon" />

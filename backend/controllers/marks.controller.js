@@ -21,7 +21,7 @@ const getMarks = async (req, res) => {
   const searchQuery = `%${search}%`;
 
   try {
-    /* ---------------- Total count (ALL students in class) ---------------- */
+    //Total count (ALL students in class) 
     const [[{ total }]] = await pool.query(
       `
       SELECT COUNT(*) AS total
@@ -35,7 +35,7 @@ const getMarks = async (req, res) => {
       [class_id, searchQuery, searchQuery]
     );
 
-    /* ---------------- Paginated student list with marks ---------------- */
+    // Paginated student list with marks
     const [rows] = await pool.query(
       `
       SELECT

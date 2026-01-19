@@ -40,7 +40,7 @@ export default function AddStudent() {
     e.preventDefault();
 
     try {
-      // ================= 1. CREATE USER =================
+      // Create user
       const userRes = await axios.post(`${API_BASE}/api/users`, {
         username: formData.username,
         email: formData.email,
@@ -50,7 +50,7 @@ export default function AddStudent() {
 
       const user_id = userRes.data.user_id;
 
-      // ================= 2. CREATE STUDENT =================
+      // Create student
       await axios.post(`${API_BASE}/api/students`, {
         reg_no: formData.reg_no,
         initals: formData.initals,
@@ -85,7 +85,7 @@ export default function AddStudent() {
       <h2 className="form-title">Add New Student</h2>
 
       <form className="student-form" onSubmit={handleSubmit}>
-        {/* LOGIN DETAILS */}
+        {/* Login details */}
         <div className="form-row">
           <label>Username</label>
           <input
@@ -120,7 +120,7 @@ export default function AddStudent() {
 
         <hr />
 
-        {/* STUDENT DETAILS */}
+        {/* Student details */}
         <div className="form-row">
           <label>Registration No</label>
           <input
