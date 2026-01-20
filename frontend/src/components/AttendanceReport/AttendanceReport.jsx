@@ -13,7 +13,12 @@ const AttendanceReport = () => {
   const [activeTab, setActiveTab] = useState("Daily");
   const [classInfo, setClassInfo] = useState({});
 
-  const periodMap = { Daily: "daily", Weekly: "weekly", Monthly: "monthly", Yearly: "yearly" };
+  const periodMap = {
+    Daily: "daily",
+    Weekly: "weekly",
+    Monthly: "monthly",
+    Yearly: "yearly",
+  };
 
   useEffect(() => {
     if (activeClassId) fetchClassInfo();
@@ -47,7 +52,9 @@ const AttendanceReport = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      setReportData(Array.isArray(res.data) ? res.data : res.data.dailyData || []);
+      setReportData(
+        Array.isArray(res.data) ? res.data : res.data.dailyData || []
+      );
     } catch {
       toast.error("Failed to load attendance report");
     } finally {
@@ -57,11 +64,21 @@ const AttendanceReport = () => {
 
   const groupedData = useMemo(() => {
     if (!Array.isArray(reportData)) return [];
+
     const map = {};
     reportData.forEach((item) => {
-      if (!map[item.date]) map[item.date] = { date: item.date, Present: 0, Absent: 0, Late: 0, Holiday: 0 };
+      if (!map[item.date]) {
+        map[item.date] = {
+          date: item.date,
+          Present: 0,
+          Absent: 0,
+          Late: 0,
+          Holiday: 0,
+        };
+      }
       map[item.date][item.status] += item.count;
     });
+
     return Object.values(map)
       .sort((a, b) => new Date(b.date) - new Date(a.date))
       .map((row) => {
@@ -71,45 +88,39 @@ const AttendanceReport = () => {
       });
   }, [reportData]);
 
-  const summary = groupedData.reduce(
-    (acc, row) => {
-      acc.Present += row.Present;
-      acc.Absent += row.Absent;
-      acc.Late += row.Late;
-      acc.Holiday += row.Holiday;
-      acc.total += row.Present + row.Absent + row.Late + row.Holiday;
-      return acc;
-    },
-    { Present: 0, Absent: 0, Late: 0, Holiday: 0, total: 0 }
-  );
-
-  const attendanceRate = summary.total ? Math.round(((summary.Present + summary.Late) / summary.total) * 100) : 0;
-
   const handleExportPDF = () => {
     if (!groupedData.length) return alert("No data to export");
+
     const doc = new jsPDF();
     doc.setFontSize(16);
-    doc.text(`Attendance Report - ${classInfo.className || "Class"}`, 14, 15);
+    doc.text(
+      `Attendance Report - ${classInfo.className || "Class"}`,
+      14,
+      15
+    );
     doc.setFontSize(12);
     doc.text(`Period: ${activeTab}`, 14, 22);
 
     autoTable(doc, {
       startY: 30,
       head: [["Date", "Present", "Absent", "Late", "Holiday", "Rate"]],
-      body: groupedData.map((r) => [r.date, r.Present, r.Absent, r.Late, r.Holiday, r.rate]),
+      body: groupedData.map((r) => [
+        r.date,
+        r.Present,
+        r.Absent,
+        r.Late,
+        r.Holiday,
+        r.rate,
+      ]),
     });
 
-    const y = doc.lastAutoTable.finalY + 10;
-    doc.text(`Present: ${summary.Present}`, 14, y);
-    doc.text(`Absent: ${summary.Absent}`, 14, y + 6);
-    doc.text(`Late: ${summary.Late}`, 14, y + 12);
-    doc.text(`Holiday: ${summary.Holiday}`, 14, y + 18);
-    doc.text(`Attendance Rate: ${attendanceRate}%`, 14, y + 24);
-
-    doc.save(`Attendance_Report_${classInfo.className || "Class"}_${activeTab}.pdf`);
+    doc.save(
+      `Attendance_Report_${classInfo.className || "Class"}_${activeTab}.pdf`
+    );
   };
 
-  if (loading || classLoading) return <div>Loading attendance report...</div>;
+  if (loading || classLoading)
+    return <div>Loading attendance report...</div>;
 
   return (
     <div className="attendance-section">
@@ -128,29 +139,6 @@ const AttendanceReport = () => {
         <button className="tab-btn" onClick={handleExportPDF}>
           Export PDF
         </button>
-      </div>
-
-      <div className="stats-summary">
-        <div className="stat-card present">
-          <div className="stat-label">Present</div>
-          <div className="stat-value">{summary.Present}</div>
-        </div>
-        <div className="stat-card absent">
-          <div className="stat-label">Absent</div>
-          <div className="stat-value">{summary.Absent}</div>
-        </div>
-        <div className="stat-card late">
-          <div className="stat-label">Late</div>
-          <div className="stat-value">{summary.Late}</div>
-        </div>
-        <div className="stat-card holiday">
-          <div className="stat-label">Holiday</div>
-          <div className="stat-value">{summary.Holiday}</div>
-        </div>
-        <div className="stat-card rate">
-          <div className="stat-label">Attendance Rate</div>
-          <div className="stat-value">{attendanceRate}%</div>
-        </div>
       </div>
 
       <div className="table-container">
@@ -186,8 +174,10 @@ const AttendanceReport = () => {
             )}
           </tbody>
         </table>
+
         <div className="table-footer">
-          Showing {groupedData.length} {activeTab === "Daily" ? "days" : activeTab.toLowerCase()}
+          Showing {groupedData.length}{" "}
+          {activeTab === "Daily" ? "days" : activeTab.toLowerCase()}
         </div>
       </div>
     </div>
