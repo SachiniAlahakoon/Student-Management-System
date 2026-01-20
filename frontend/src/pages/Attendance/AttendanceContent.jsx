@@ -27,11 +27,11 @@ export default function AttendanceContent() {
     <div className="contentArea">
       <ToastContainer position="top-right" autoClose={3000} />
 
-      <header className="heading">
-        <h1>Attendance Management</h1>
+      <header className="mainHeading">
+        <h1 className="mainHeading-atten">Attendance Management</h1>
       </header>
 
-      <div className="action-buttons">
+      <div className="atten-action-buttons">
         {views.map((view) => (
           <button
             key={view.id}

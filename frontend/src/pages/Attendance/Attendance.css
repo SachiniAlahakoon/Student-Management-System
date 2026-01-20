@@ -261,14 +261,11 @@
   min-height: 100vh;
 }
 
-.heading {
-  margin-bottom: 24px;
+.mainHeading {
+  margin-bottom: 10px;
 }
 
-.heading h1 {
-  font-size: 1.8rem;
-  color: #333;
-  font-weight: 600;
+.mainHeading-atten {
   margin: 0;
 }
 
@@ -343,7 +340,7 @@
   background-color: #5a6268;
 }
 
-.action-buttons {
+.atten-action-buttons {
   display: flex;
   gap: 12px;
   margin-bottom: 20px;
@@ -866,6 +863,12 @@
   background: #f8f8f8;
   cursor: pointer;
   border-radius: 4px;
+  color: #2e2d2d;
+}
+
+.top-controls button:hover {
+  background-color: #1565c0;
+  color: rgb(255, 255, 255);
 }
 
 .top-controls button:disabled {
