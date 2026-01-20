@@ -155,20 +155,21 @@ router.put("/:subject_id/teacher", async (req, res) => {
 
 
 router.delete("/:subject_id", async (req, res) => {
-  try {
-    const [result] = await pool.query(
-      `DELETE FROM subjects WHERE subject_id = ?`,
-      [req.params.subject_id]
-    );
+  const { subject_id } = req.params;
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "Subject not found" });
-    }
+  await pool.query(
+    `DELETE FROM teacher_subjects WHERE subject_id = ?`,
+    [subject_id]
+  );
 
-    res.json({ message: "Subject deleted successfully" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+  await pool.query(
+    `DELETE FROM subjects WHERE subject_id = ?`,
+    [subject_id]
+  );
+
+  res.json({ message: "Subject deleted" });
 });
+
+
 
 module.exports = router;
