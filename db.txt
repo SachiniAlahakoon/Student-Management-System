@@ -201,19 +201,17 @@ INSERT INTO teacher_subjects (teacher_id,subject_id,class_id) VALUES
 -- EXAM RESULTS
 INSERT INTO exam_results (student_id,subject_id,class_id,year,term,marks) VALUES
 (1,1,1,2025,'1st',85),
-(2,2,1,2025,'1st',72);
+(2,2,1,2025,'1st',72),
 (1,3,2,2025,'2nd',92),
-(2,4,2,2025,'2nd',65),
-(1,5,1,2025,'3rd',88);
+(2,4,2,2025,'2nd',65);
 
 -- ATTENDANCE
 INSERT INTO student_attendance
 (student_id,class_id,attendance_date,status,marked_by) VALUES
 (1,1,'2026-01-01','Present',1),
 (2,1,'2026-01-01','Absent',1),
-(1,2,'2026-01-02','Present'),
-(2,2,'2026-01-02','Absent'),
-(1,1,'2026-01-03','Present');
+(1,2,'2026-01-02','Present',1),
+(1,1,'2026-01-03','Present',1);
 
 -- PROFESSIONAL INFO
 INSERT INTO pro_information
