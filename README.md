@@ -1,6 +1,6 @@
 🎓 **#Student Management System (SMS)**
 
-A role-based Student Management System built using React, Node.js, Express, and MySQL, featuring secure JWT authentication and protected routes.
+A role-based Student Management System built using React, Node.js, Javascript, and MySQL, featuring secure JWT authentication and protected routes.
 
 🚀 **#Features**
 
