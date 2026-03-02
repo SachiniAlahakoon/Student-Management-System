@@ -1,0 +1,222 @@
+DROP DATABASE IF EXISTS student_mgmt;
+CREATE DATABASE student_mgmt;
+USE student_mgmt;
+
+CREATE TABLE users (
+  user_id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(50) NOT NULL UNIQUE,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  role ENUM('student','teacher','admin') NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  reset_token VARCHAR(255),
+  reset_token_expiry BIGINT
+);
+
+CREATE TABLE admins (
+  admin_id INT AUTO_INCREMENT PRIMARY KEY,
+  NIC VARCHAR(12) NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  phone VARCHAR(15) NOT NULL,
+  user_id INT NOT NULL UNIQUE,
+  FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+CREATE TABLE teachers (
+  teacher_id INT AUTO_INCREMENT PRIMARY KEY,
+  id_no VARCHAR(20),
+  teacher_name VARCHAR(50),
+  birthday DATE,
+  phone VARCHAR(15),
+  email VARCHAR(100),
+  user_id INT NOT NULL UNIQUE,
+  FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+CREATE TABLE classes (
+  class_id INT AUTO_INCREMENT PRIMARY KEY,
+  class_name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE students (
+  student_id INT AUTO_INCREMENT PRIMARY KEY,
+  reg_no INT,
+  initals VARCHAR(20),
+  student_firstname VARCHAR(20),
+  student_lastname VARCHAR(20),
+  address VARCHAR(255),
+  birthday DATE,
+  admission_date DATE,
+  blood_type VARCHAR(10),
+  Hcondition VARCHAR(255),
+  contact1 VARCHAR(15),
+  contact2 VARCHAR(15),
+  user_id INT NOT NULL UNIQUE,
+  class_id INT NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(user_id),
+  FOREIGN KEY (class_id) REFERENCES classes(class_id)
+);
+
+CREATE TABLE acade_info (
+  ac_id INT AUTO_INCREMENT PRIMARY KEY,
+  current_grade VARCHAR(20),
+  section VARCHAR(20),
+  subjects_en VARCHAR(255),
+  student_id INT UNIQUE,
+  FOREIGN KEY (student_id) REFERENCES students(student_id)
+);
+
+CREATE TABLE subjects (
+  subject_id INT AUTO_INCREMENT PRIMARY KEY,
+  subject_name VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE teacher_subjects (
+  teacher_subject_id INT AUTO_INCREMENT PRIMARY KEY,
+  teacher_id INT NOT NULL,
+  subject_id INT NOT NULL,
+  class_id INT NOT NULL,
+  FOREIGN KEY (teacher_id) REFERENCES teachers(teacher_id),
+  FOREIGN KEY (subject_id) REFERENCES subjects(subject_id),
+  FOREIGN KEY (class_id) REFERENCES classes(class_id),
+  UNIQUE (teacher_id, subject_id, class_id)
+);
+
+CREATE TABLE exam_results (
+  result_id INT AUTO_INCREMENT PRIMARY KEY,
+  student_id INT NOT NULL,
+  subject_id INT NOT NULL,
+  class_id INT NOT NULL,
+  year YEAR NOT NULL,
+  term ENUM('1st','2nd','3rd') NOT NULL,
+  marks INT,
+  grade VARCHAR(5),
+  FOREIGN KEY (student_id) REFERENCES students(student_id),
+  FOREIGN KEY (subject_id) REFERENCES subjects(subject_id),
+  FOREIGN KEY (class_id) REFERENCES classes(class_id),
+  UNIQUE (student_id, subject_id, year, term)
+);
+
+CREATE TABLE student_attendance (
+  student_attendance_id INT AUTO_INCREMENT PRIMARY KEY,
+  student_id INT NOT NULL,
+  class_id INT NOT NULL,
+  attendance_date DATE NOT NULL,
+  status ENUM('Present','Absent','Late') NOT NULL,
+  marked_by INT NOT NULL,
+  UNIQUE KEY uniq_attendance_day (student_id, class_id, attendance_date),
+  FOREIGN KEY (student_id) REFERENCES students(student_id),
+  FOREIGN KEY (class_id) REFERENCES classes(class_id),
+  FOREIGN KEY (marked_by) REFERENCES teachers(teacher_id)
+);
+
+CREATE TABLE pro_information (
+  p_in_id INT AUTO_INCREMENT PRIMARY KEY,
+  years_experience VARCHAR(50),
+  qualification VARCHAR(255),
+  current_role VARCHAR(50),
+  bio TEXT,
+  teacher_id INT UNIQUE,
+  FOREIGN KEY (teacher_id) REFERENCES teachers(teacher_id)
+);
+
+DELIMITER //
+
+CREATE TRIGGER trg_AssignGrade_Insert
+BEFORE INSERT ON exam_results
+FOR EACH ROW
+BEGIN
+  IF NEW.marks >= 75 THEN SET NEW.grade = 'A';
+  ELSEIF NEW.marks >= 65 THEN SET NEW.grade = 'B';
+  ELSEIF NEW.marks >= 55 THEN SET NEW.grade = 'C';
+  ELSEIF NEW.marks >= 35 THEN SET NEW.grade = 'S';
+  ELSE SET NEW.grade = 'F';
+  END IF;
+END//
+
+CREATE TRIGGER trg_AssignGrade_Update
+BEFORE UPDATE ON exam_results
+FOR EACH ROW
+BEGIN
+  IF NEW.marks >= 75 THEN SET NEW.grade = 'A';
+  ELSEIF NEW.marks >= 65 THEN SET NEW.grade = 'B';
+  ELSEIF NEW.marks >= 55 THEN SET NEW.grade = 'C';
+  ELSEIF NEW.marks >= 35 THEN SET NEW.grade = 'S';
+  ELSE SET NEW.grade = 'F';
+  END IF;
+END//
+
+DELIMITER ;
+
+
+-- USERS
+INSERT INTO users (username,email,password_hash,role) VALUES
+('Wimoksha','wimoksha@example.com','Wimo','student'),
+('Sachini','sachini@example.com','Sachi','admin'),
+('Shakeera','shakeera@example.com','Shakee','student'),
+('Devindya','devindya@example.com','Devi','teacher'),
+('Chathuranga','chathuranga@example.com','Chathu','teacher');
+
+-- ADMINS
+INSERT INTO admins (NIC,name,phone,user_id)
+VALUES ('901234567V','Sachini Alahakoon','0712345678',2);
+
+-- CLASSES
+INSERT INTO classes (class_name) VALUES
+('Grade 12A1'),
+('Grade 12A2'),
+('Grade 12A3');
+
+-- TEACHERS
+INSERT INTO teachers (id_no,teacher_name,birthday,phone,email,user_id) VALUES
+('T001','Devindya Senavirthne','1980-05-12','0711234567','devindya@example.com',4),
+('T002','Chathuranga Lakshan','1975-07-20','0712345678','chathuranga@example.com',5);
+
+-- STUDENTS
+INSERT INTO students
+(reg_no,initals,student_firstname,student_lastname,address,birthday,
+ admission_date,blood_type,Hcondition,contact1,contact2,user_id,class_id)
+VALUES
+(2023001,'A.P','Wimoksha','Silva','Colombo','2004-03-12','2020-01-10','O+','None','0711111111','0712222222',1,1),
+(2023002,'B.F','Shakeera','Musthafa','Kandy','2004-07-22','2020-01-10','A+','Asthma','0713333333','0714444444',3,1);
+
+-- ACADEMIC INFO
+INSERT INTO acade_info (current_grade,section,subjects_en,student_id) VALUES
+('Grade 12','A','Math, English, Science',1),
+('Grade 12','A','Math, English, History',2);
+
+-- SUBJECTS
+INSERT INTO subjects (subject_name) VALUES
+('Mathematics'),
+('English'),
+('Science'),
+('History');
+
+-- TEACHER SUBJECTS
+INSERT INTO teacher_subjects (teacher_id,subject_id,class_id) VALUES
+(1,1,1),
+(1,2,1),
+(2,3,2);
+
+-- EXAM RESULTS
+INSERT INTO exam_results (student_id,subject_id,class_id,year,term,marks) VALUES
+(1,1,1,2025,'1st',85),
+(2,2,1,2025,'1st',72);
+(1,3,2,2025,'2nd',92),
+(2,4,2,2025,'2nd',65),
+(1,5,1,2025,'3rd',88);
+
+-- ATTENDANCE
+INSERT INTO student_attendance
+(student_id,class_id,attendance_date,status,marked_by) VALUES
+(1,1,'2026-01-01','Present',1),
+(2,1,'2026-01-01','Absent',1),
+(1,2,'2026-01-02','Present'),
+(2,2,'2026-01-02','Absent'),
+(1,1,'2026-01-03','Present');
+
+-- PROFESSIONAL INFO
+INSERT INTO pro_information
+(years_experience,qualification,current_role,bio,teacher_id) VALUES
+('10 years','MSc in Education','Senior Teacher','Math specialist',1),
+('12 years','MA in English','English Teacher','Literature expert',2);

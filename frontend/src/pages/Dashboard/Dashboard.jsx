@@ -7,9 +7,9 @@ import "./Dashboard.css";
 
 function Dashboard() {
   return (
-    <div className="student-frame">
+    <div className="dashboard-frame">
       <TopBar />
-      <div className="student-content">
+      <div className="dashboard-content">
         <SideBar />
         <main className="page-area">
           <Outlet />
