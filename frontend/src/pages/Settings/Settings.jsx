@@ -1,14 +1,10 @@
 import React, { useState } from "react";
 import "./Settings.css";
-import { setTheme, getTheme } from "../../utils/theme";
-
 
 function Settings() {
-  const [darkMode, setDarkMode] = useState(getTheme());
   const [notifications, setNotifications] = useState(true);
   const [page, setPage] = useState("settings");
   // "settings" | "about" | "feedback"
-
 
   /* ---------- ABOUT PAGE ---------- */
   if (page === "about") {
@@ -47,15 +43,18 @@ function Settings() {
           <span>About</span>
         </div>
 
-        {/* 2️⃣ DARK MODE */}
-        <div className="settings-item toggle">
-          <span>Dark mode</span>
+        {/* Notifications toggle (optional - keep if needed) */}
+        {/* <div className="settings-item toggle">
+          <span>Notifications</span>
           <label className="switch">
-           <input type="checkbox" checked={darkMode} onChange={() => {const value = !darkMode;
-           setDarkMode(value); setTheme(value); }} />
+            <input 
+              type="checkbox" 
+              checked={notifications} 
+              onChange={() => setNotifications(!notifications)} 
+            />
             <span className="slider"></span>
           </label>
-        </div>
+        </div> */}
 
       </div>
     </>
